@@ -56,11 +56,6 @@ function DocumentZero({ doc }: { doc: any }) {
              Document No.134-000
            </div>
          </div>
-
-         <div className="absolute bottom-10 md:bottom-12 right-6 md:right-12 font-mono text-[10px] md:text-xs font-bold tracking-[0.4em] text-[#2e2a24] z-20 flex flex-col items-end gap-2">
-            <span className="bg-[#2e2a24] text-[#f4efe4] px-2 py-0.5">ORIGIN SOURCE</span>
-            <span>{doc.displayId}</span>
-         </div>
       </div>
 
       <main className="w-full max-w-4xl px-6 py-24 md:py-32 flex flex-col items-center">
