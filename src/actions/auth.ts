@@ -1,30 +1,27 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
-import crypto from 'crypto';
 import { createSession, deleteSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 
 export async function loginContent(prevState: any, formData: FormData) {
   const password = formData.get('password') as string;
+  const adminSecret = process.env.ADMIN_PASSWORD;
 
   if (!password) {
-    return { error: 'Password is required' };
+    return { error: '合言葉が必要です。' };
   }
 
-  // Hash the incoming password with sha256 to compare with DB
-  const hashPassword = crypto.createHash('sha256').update(password).digest('hex');
+  if (!adminSecret) {
+    console.error('ADMIN_PASSWORD environment variable is not set');
+    return { error: 'システム設定エラー：管理者に連絡してください。' };
+  }
 
-  const adminUser = await prisma.user.findUnique({
-    where: { username: 'sena' },
-  });
-
-  if (!adminUser || adminUser.password !== hashPassword) {
-    return { error: 'Invalid credentials' };
+  if (password !== adminSecret) {
+    return { error: '合言葉が違います。' };
   }
 
   // Create active session
-  await createSession(adminUser.id);
+  await createSession('sena-admin');
   
   redirect('/sena-auth/dashboard');
 }
