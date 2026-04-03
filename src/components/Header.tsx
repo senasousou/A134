@@ -109,24 +109,31 @@ export default function Header() {
     };
   }, [isMenuOpen]);
 
-  // 零号資料（DOC134-000）の特設ページでは、トップページへの戻り導線に特化したミニマルなヘッダーを表示する
+  // 零号資料（DOC134-000）の特設ページでは、左側のロゴ一式（正式な看板）のみを表示する
   if (pathname === '/document/DOC134-000') {
     return (
       <header className="sticky top-0 z-50 w-full bg-transparent">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-3 md:py-4 flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-4 md:py-6 flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-4 md:gap-5 hover:opacity-80 transition-opacity">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Logo" className="h-8 md:h-10 w-auto object-contain grayscale" />
-            <div className="flex flex-col border-l border-[#bbb4a4] pl-4">
-              <span className="font-serif font-bold text-xs tracking-widest text-[#2e2a24]">記録資料零号</span>
-              <span className="font-mono text-[8px] tracking-widest uppercase text-[#5a5248]">Origin Document</span>
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              className="h-10 md:h-14 lg:h-16 w-auto object-contain" 
+            />
+            <div className="flex flex-col justify-center border-l border-[#bbb4a4] pl-4 md:pl-5">
+              <h1 className="font-serif font-bold text-base md:text-lg lg:text-xl tracking-[0.2em] leading-tight text-[#2e2a24]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img 
+                  src="/logotype.png" 
+                  alt="記録資料一三四号" 
+                  className="h-[16px] md:h-[22px] lg:h-[25px] w-auto object-contain brightness-0" 
+                />
+              </h1>
+              <span className="font-mono text-[8px] md:text-[10px] tracking-widest uppercase mt-0.5 text-[#5a5248]">
+                Archive 134
+              </span>
             </div>
-          </Link>
-          <Link 
-            href="/" 
-            className="font-mono text-[10px] tracking-widest border border-[#2e2a24] px-6 py-1.5 text-[#2e2a24] hover:bg-[#2e2a24] hover:text-[#f4efe4] transition-all"
-          >
-            RETURN TO DIRECTORY
           </Link>
         </div>
       </header>
