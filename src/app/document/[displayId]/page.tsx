@@ -369,12 +369,12 @@ export default async function DocumentDetailPage({
 
       <footer className="border-t-2 border-[#2e2a24] py-8 flex justify-between items-center text-[10px] font-mono tracking-widest uppercase">
         <div className="w-1/3">
-          {prevDoc ? (
-            <Link href={`/document/${prevDoc.displayId}`} className="hover:opacity-50 transition-opacity flex items-center gap-2">
-              <span>←</span> PREV DOC
+          {nextDoc ? (
+            <Link href={`/document/${nextDoc.displayId}`} className="hover:opacity-50 transition-opacity flex items-center gap-2">
+              <span>←</span> OLDER DOCUMENT
             </Link>
           ) : (
-            <span className="text-[#bbb4a4] flex items-center gap-2"><span>←</span> PREV DOC</span>
+            <span className="text-[#bbb4a4] flex items-center gap-2"><span>←</span> OLDER DOCUMENT</span>
           )}
         </div>
         <div className="w-full text-center mt-12">
@@ -383,12 +383,12 @@ export default async function DocumentDetailPage({
           </Link>
         </div>
         <div className="w-1/3 flex justify-end">
-          {nextDoc ? (
-            <Link href={`/document/${nextDoc.displayId}`} className="hover:opacity-50 transition-opacity flex items-center gap-2">
-              NEXT DOC <span>→</span>
+          {prevDoc ? (
+            <Link href={`/document/${prevDoc.displayId}`} className="hover:opacity-50 transition-opacity flex items-center gap-2">
+              NEWER DOCUMENT <span>→</span>
             </Link>
           ) : (
-            <span className="text-[#bbb4a4] flex items-center gap-2">NEXT DOC <span>→</span></span>
+            <span className="text-[#bbb4a4] flex items-center gap-2">NEWER DOCUMENT <span>→</span></span>
           )}
         </div>
       </footer>
