@@ -35,7 +35,7 @@ function DocumentZero({ doc }: { doc: any }) {
   return (
     <div className="min-h-screen text-[#2e2a24] bg-[#f4efe4] flex flex-col items-center">
       {/* ヒーローエリア: 書道作品スペース */}
-      <div className="w-full h-[100dvh] md:h-[85vh] bg-white border-b border-[#2e2a24] relative flex items-center justify-center overflow-hidden pt-24 md:pt-24">
+      <div className="w-full h-[100dvh] md:h-[85vh] bg-white border-b border-[#2e2a24] relative flex items-center justify-center overflow-hidden">
          <div className="absolute inset-0 bg-white/5 opacity-30 bg-[radial-gradient(circle_at_center,_transparent_0,_rgba(0,0,0,0.2)_100%)] mix-blend-overlay pointer-events-none z-10"></div>
          
          <div className="text-center z-20 flex flex-col items-center">
