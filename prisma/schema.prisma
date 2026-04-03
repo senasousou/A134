@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Genre {
+  id        String     @id @default(cuid())
+  code      String     @unique // "010", "020" など
+  name      String     // "ドキュメント", "絵画" など
+  documents Document[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Document {
+  id           String   @id @default(cuid())
+  displayId    String   @unique // 例: "DOC134-020-3675"
+  title        String
+  content      String   // マークダウンなどを想定したテキスト
+  thumbnailUrl String?  // 任意のサムネイル画像
+  genreId      String
+  genre        Genre    @relation(fields: [genreId], references: [id])
+  tags         String   // カンマ区切りのキーワードなど
+  externalLinkName String? // 「BOOTHで購入する」等のリンク名
+  externalLinkUrl  String? // 外部サイトのURL
+  externalLink2Name String? // 2つ目のリンク名
+  externalLink2Url  String? 
+  externalLink3Name String? // 3つ目のリンク名
+  externalLink3Url  String? 
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  collectedAt  DateTime @default(now()) // 採取日（ユーザーが任意で指定可能）
+  timelineEvents TimelineEvent[] // 年表の出来事との関連付け
+  mediaRecords   MediaRecord[]   // 関連する音声・映像資料
+}
+
+model MediaRecord {
+  id          String   @id @default(cuid())
+  label       String   // 「RECORD 01」など (Record ID)
+  title       String   // 「音声記録」など (種別)
+  description String   // 「女性の声で...」 (ディスクリプション)
+  url         String?  // YouTube IDやURL (メディア)
+  transcript  String?  // 書き起こし内容 (資料内容)
+  order       Int      @default(0) // 並べ替え用
+  documentId  String
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String   // hashed password
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TimelineCategory {
+  id        String          @id @default(cuid())
+  name      String          @unique // "環境", "人物", "現象" など
+  events    TimelineEvent[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model TimelineEvent {
+  id               String           @id @default(cuid())
+  yearValue        Float            // ソート用巨大数許容 (BCはマイナス, ADはプラス)
+  displayYear      String           // 表示用の文字列 "紀元前1000年", "西暦2026年"等
+  content          String           // 出来事の詳細
+  categoryId       String
+  category         TimelineCategory @relation(fields: [categoryId], references: [id])
+  relatedDocuments Document[]       // 関連する収蔵資料との多対多リレーション
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
