@@ -35,11 +35,11 @@ function DocumentZero({ doc }: { doc: any }) {
   return (
     <div className="min-h-screen text-[#2e2a24] bg-[#f4efe4] flex flex-col items-center">
       {/* ヒーローエリア: 書道作品スペース */}
-      <div className="w-full h-[85vh] bg-white border-b border-[#2e2a24] relative flex items-center justify-center overflow-hidden pt-20 md:pt-24">
+      <div className="w-full h-[90vh] md:h-[85vh] bg-white border-b border-[#2e2a24] relative flex items-center justify-center overflow-hidden pt-24 md:pt-24">
          <div className="absolute inset-0 bg-white/5 opacity-30 bg-[radial-gradient(circle_at_center,_transparent_0,_rgba(0,0,0,0.2)_100%)] mix-blend-overlay pointer-events-none z-10"></div>
          
          <div className="text-center z-20 flex flex-col items-center">
-           <p className="font-mono text-[10px] tracking-[0.4em] text-[#5a5248] mb-12 border border-[#5a5248] inline-block px-6 py-1 uppercase opacity-60">
+           <p className="font-mono text-[10px] tracking-[0.4em] text-[#5a5248] mb-8 md:mb-12 border border-[#5a5248] inline-block px-6 py-1 uppercase opacity-60">
              Classified Artifact: Origin
            </p>
            
@@ -48,16 +48,16 @@ function DocumentZero({ doc }: { doc: any }) {
               <img 
                 src="/tengen-vertical.png" 
                 alt="てんげん" 
-                className="h-[65vh] w-auto object-contain mix-blend-multiply filter contrast-125" 
+                className="h-[52vh] md:h-[65vh] w-auto object-contain mix-blend-multiply filter contrast-125" 
               />
            </div>
 
-           <div className="mt-20 md:mt-12 font-mono text-[10px] tracking-[0.3em] text-[#5a5248] uppercase">
+           <div className="mt-8 md:mt-12 font-mono text-[10px] tracking-[0.3em] text-[#5a5248] uppercase">
              Document No.134-000
            </div>
          </div>
 
-         <div className="absolute bottom-16 md:bottom-12 right-6 md:right-12 font-mono text-[10px] md:text-xs font-bold tracking-[0.4em] text-[#2e2a24] z-20 flex flex-col items-end gap-2">
+         <div className="absolute bottom-8 md:bottom-12 right-6 md:right-12 font-mono text-[10px] md:text-xs font-bold tracking-[0.4em] text-[#2e2a24] z-20 flex flex-col items-end gap-2">
             <span className="bg-[#2e2a24] text-[#f4efe4] px-2 py-0.5">ORIGIN SOURCE</span>
             <span>{doc.displayId}</span>
          </div>
