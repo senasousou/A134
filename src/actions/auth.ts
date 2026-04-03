@@ -5,7 +5,8 @@ import { redirect } from 'next/navigation';
 
 export async function loginContent(prevState: any, formData: FormData) {
   const password = formData.get('password') as string;
-  const adminSecret = process.env.ADMIN_PASSWORD;
+  // 環境変数が取れない場合の緊急用フォールバック
+  const adminSecret = process.env.ADMIN_PASSWORD || 'SenaSouSou2266';
 
   if (!password) {
     return { error: '合言葉が必要です。' };
