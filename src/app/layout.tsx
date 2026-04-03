@@ -16,9 +16,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "記録資料一三四号 - TENGEN ARCHIVE",
   description: "創作叙事詩「てんげん」に関連する記録資料の保管庫",
-  icons: {
-    icon: "/icon.png",
-  },
 };
 
 export default function RootLayout({
