@@ -52,12 +52,12 @@ function DocumentZero({ doc }: { doc: any }) {
               />
            </div>
 
-           <div className="mt-12 font-mono text-[10px] tracking-[0.3em] text-[#5a5248] uppercase">
+           <div className="mt-20 md:mt-12 font-mono text-[10px] tracking-[0.3em] text-[#5a5248] uppercase">
              Document No.134-000
            </div>
          </div>
 
-         <div className="absolute bottom-12 right-12 font-mono text-xs font-bold tracking-[0.4em] text-[#2e2a24] z-20 flex flex-col items-end gap-2">
+         <div className="absolute bottom-16 md:bottom-12 right-6 md:right-12 font-mono text-[10px] md:text-xs font-bold tracking-[0.4em] text-[#2e2a24] z-20 flex flex-col items-end gap-2">
             <span className="bg-[#2e2a24] text-[#f4efe4] px-2 py-0.5">ORIGIN SOURCE</span>
             <span>{doc.displayId}</span>
          </div>
