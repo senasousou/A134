@@ -2,9 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { useActionState, useState } from 'react';
-import { createDocumentAction, updateDocumentAction, deleteDocument } from '@/actions/document';
+import { uploadThumbnailAction, createDocumentAction, updateDocumentAction, deleteDocument } from '@/actions/document';
 import type { Genre } from '@prisma/client';
-import { supabase } from '@/lib/supabase';
 
 export default function DocumentForm({
   initialData,
@@ -16,14 +15,9 @@ export default function DocumentForm({
   isEdit?: boolean;
 }) {
   const router = useRouter();
-  
-  const [state, formAction, isPending] = useActionState(
-    isEdit ? updateDocumentAction : createDocumentAction, 
-    { error: '' }
-  );
-  
+
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState('');
+  const [error, setError] = useState('');
   const [statusMessage, setStatusMessage] = useState(''); // 進捗ログ用
   const [isDeleting, setIsDeleting] = useState(false);
   const [mediaRecords, setMediaRecords] = useState<any[]>(
@@ -32,57 +26,46 @@ export default function DocumentForm({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setUploadError('');
+    setError('');
     setIsUploading(true);
-    setStatusMessage('1/2. 画像を送信しています...');
+    setStatusMessage('1/2. 管理者権限で画像を直送しています...');
 
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const file = formData.get('thumbnail') as File | null;
 
     try {
-      // プランC: 専用 API 窓口 (/api/upload) を経由してアップロード
-      if (file && file.size > 0) {
-        if (file.size > 10 * 1024 * 1024) {
-          throw new Error('画像サイズが大きすぎます (10MB以下にしてください)');
-        }
+      // プランG: 管理者権限 (Service Role) を利用した直送アクション
+      const uploadResult = await uploadThumbnailAction(formData);
 
-        const uploadFormData = new FormData();
-        uploadFormData.append('file', file);
-
-        const res = await fetch('/api/upload', {
-          method: 'POST',
-          body: uploadFormData,
-        });
-
-        const result = await res.json();
-
-        if (!res.ok || result.error) {
-          throw new Error(result.error || '画像の送信に失敗しました');
-        }
-
-        // 窓口から返ってきた URL を FormData に格納して Server Action へ
-        formData.set('uploadedThumbnailUrl', result.url);
+      if (uploadResult?.error) {
+        throw new Error(uploadResult.error);
       }
 
-      setStatusMessage('2/2. データベースに記録を保存しています...');
+      if (uploadResult?.url) {
+        formData.set('uploadedThumbnailUrl', uploadResult.url);
+      }
 
-      // API 経経でのアップロードが完了したら、Server Action を呼び出す
-      const resultAction = await (formAction(formData) as any);
+      setStatusMessage('2/2. データベースに記録を永久保存しています...');
 
-      if (resultAction?.success) {
-        setStatusMessage('保存完了！ダッシュボードに戻ります...');
-        // 保存成功: ブラウザ側で明示的に画面を移動・更新させる (プランD)
+      // 直接サーバーアクションを呼び出す (useActionStateのマジックを使わない)
+      const saveAction = isEdit ? updateDocumentAction : createDocumentAction;
+      const result = await (saveAction(null, formData) as any);
+
+      if (result?.success) {
+        setStatusMessage('収蔵完了！ダッシュボードに戻ります...');
         router.push('/sena-auth/dashboard');
         router.refresh();
-      } else if (resultAction?.error) {
-        throw new Error(resultAction.error);
+      } else if (result?.error) {
+        throw new Error(result.error);
       }
     } catch (err: any) {
-      console.error('Client Submit Error:', err);
-      setUploadError(err.message || '予期せぬエラーが発生しました');
+      console.error('Plan G Submit Error:', err);
+      const msg = err.message || '予期せぬエラーが発生しました';
+      setError(msg);
       setStatusMessage('');
       setIsUploading(false);
+      // 白い画面になる前にポップアップで知らせる
+      alert(`保存に失敗しました: ${msg}`);
     }
   };
 
@@ -418,34 +401,49 @@ export default function DocumentForm({
         </div>
       </div>
 
-      <div className="flex gap-4 pt-8 border-t cosmic-border mt-8 justify-between">
-        <div>
+      <div className="flex flex-col sm:flex-row gap-4 pt-12 border-t border-[#bbb4a4] mt-16 justify-between items-center bg-[#faf7f2]/50 p-6 rounded-lg">
+        <div className="flex gap-4 items-center">
+          <button
+            type="button"
+            onClick={() => router.push('/sena-auth/dashboard')}
+            className="px-8 py-3 border border-[#bbb4a4] hover:bg-[#efe9df] text-[#5a5248] text-sm tracking-widest transition-colors font-mono"
+            disabled={isUploading || isDeleting}
+          >
+            記録を中断
+          </button>
+          
           {isEdit && (
             <button
               type="button"
               onClick={handleDelete}
-              disabled={isDeleting || isPending || isUploading}
-              className="px-6 py-3 border border-red-700 text-red-700 hover:bg-red-50 disabled:opacity-50 text-sm tracking-widest"
+              disabled={isDeleting || isUploading}
+              className="px-8 py-3 border border-red-300 text-red-700 hover:bg-red-50 disabled:opacity-50 text-sm tracking-widest transition-colors font-mono"
             >
               資料抹消
             </button>
           )}
         </div>
-        <div className="flex gap-4">
-          <button
-            type="button"
-            onClick={() => router.push('/sena-auth/dashboard')}
-            className="px-6 py-3 border border-[var(--border)] hover:bg-[var(--muted)] text-[var(--muted-foreground)] text-sm tracking-widest"
-          >
-            キャンセル
-          </button>
+
+        <div className="flex flex-col items-center sm:items-end gap-3 flex-1">
           <button
             type="submit"
-            disabled={isPending || isDeleting || isUploading}
-            className="px-8 py-3 bg-[var(--foreground)] text-[var(--background)] hover:bg-black transition-colors tracking-widest disabled:opacity-50 text-sm"
+            disabled={isUploading || isDeleting}
+            className="px-12 py-4 bg-[#4a443c] text-[#f8f5f0] hover:bg-black transition-all tracking-[0.3em] disabled:opacity-50 text-base font-bold shadow-lg"
           >
-            {isUploading ? '画像を送信中...' : isPending ? '記録を保存中...' : isEdit ? '更新を保存' : '新規登録として記録'}
+            {isEdit ? '記録を更新保存' : '永久資料として収蔵'}
           </button>
+          
+          {statusMessage && (
+            <span className="text-[#8B7355] text-xs font-serif italic animate-pulse">
+              {statusMessage}
+            </span>
+          )}
+          
+          {error && (
+            <span className="text-red-700 text-xs font-mono bg-red-50 px-2 py-1 border border-red-100">
+              {error}
+            </span>
+          )}
         </div>
       </div>
     </form>

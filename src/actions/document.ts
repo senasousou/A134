@@ -5,7 +5,44 @@ import { generateDisplayId } from '@/lib/id-generator';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { adminSupabase } from '@/lib/admin-supabase';
 import path from 'path';
+
+// 管理者権限 (Service Role) を利用した高速直送アクション
+export async function uploadThumbnailAction(formData: FormData) {
+  try {
+    const file = formData.get('thumbnail') as File | null;
+    if (!file || file.size === 0) return { url: null };
+
+    // サーバーサイドでのサニタイズ
+    const fileNameParts = file.name.split('.');
+    const ext = fileNameParts.length > 1 ? `.${fileNameParts.pop()}` : '';
+    const baseNameCandidate = file.name.replace(ext, '').replace(/[^a-zA-Z0-9_\-]/g, '');
+    const baseName = baseNameCandidate || 'upload';
+    const fileName = `${Date.now()}-${baseName}${ext}`;
+
+    const { data, error: uploadError } = await adminSupabase.storage
+      .from('uploads')
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error('Admin Upload Error:', uploadError);
+      throw new Error(`送信失敗: ${uploadError.message}`);
+    }
+
+    const { data: { publicUrl } } = adminSupabase.storage
+      .from('uploads')
+      .getPublicUrl(fileName);
+
+    return { url: publicUrl };
+  } catch (err: any) {
+    console.error('Upload Action Error:', err);
+    return { error: err.message };
+  }
+}
 
 async function handleFileUpload(formData: FormData): Promise<string | undefined> {
   try {
