@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import SiteFooter from '@/components/SiteFooter';
 import { ObservationBadge, RestrictedLog } from '@/components/LoreStyles';
 import { getAdminNotesAction } from '@/actions/content';
 
@@ -79,7 +80,7 @@ export default async function AdministratorListPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {notes.map((note) => (
+            {notes.map((note: any) => (
               <Link 
                 key={note.slug} 
                 href={`/administrator/${note.slug}`}
@@ -117,11 +118,7 @@ export default async function AdministratorListPage() {
         </RestrictedLog>
       </main>
 
-      <footer className="mt-24 border-t-2 border-[#1c1917] pt-8 text-center pb-16">
-        <Link href="/" className="font-mono text-sm tracking-widest hover:text-[#57534e] transition-colors border border-[#2e2a24] px-6 py-2 hover:bg-[#2e2a24] hover:text-[#f4efe4]">
-          RETURN TO DIRECTORY
-        </Link>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { getTimelineEvents } from '@/actions/timeline';
+import SiteFooter from '@/components/SiteFooter';
 import TimelineAccordionItem from '@/components/TimelineAccordionItem';
 import Link from 'next/link';
 
@@ -47,11 +48,7 @@ export default async function TimelinePage() {
         )}
       </main>
       
-      <footer className="mt-24 border-t-2 border-[#1c1917] pt-8 text-center pb-16">
-        <Link href="/" className="font-mono text-sm tracking-widest hover:text-[#57534e] transition-colors border border-[#2e2a24] px-6 py-2 hover:bg-[#2e2a24] hover:text-[#f4efe4]">
-          RETURN TO DIRECTORY
-        </Link>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { getDocumentByDisplayId, getDocuments } from '@/actions/document';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
+import SiteFooter from '@/components/SiteFooter';
 
 export const dynamic = 'force-dynamic';
 
@@ -148,11 +149,7 @@ function DocumentZero({ doc }: { doc: any }) {
         )}
       </main>
 
-      <footer className="w-full border-t border-[#bbb4a4] py-12 flex justify-center bg-[#f0ecdf]/30">
-        <Link href="/" className="font-mono text-sm tracking-widest hover:text-[#57534e] transition-colors border border-[#2e2a24] px-10 py-3 hover:bg-[#2e2a24] hover:text-[#f4efe4]">
-          RETURN TO DIRECTORY
-        </Link>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
@@ -362,7 +359,8 @@ export default async function DocumentDetailPage({
         </aside>
       </div>
 
-      <footer className="border-t-2 border-[#2e2a24] py-8 flex justify-between items-center text-[10px] font-mono tracking-widest uppercase">
+      {/* 前後の文書ナビゲーション */}
+      <nav className="border-t-2 border-[#2e2a24] py-8 flex justify-between items-center text-[10px] font-mono tracking-widest uppercase">
         <div className="w-1/3">
           {nextDoc ? (
             <Link href={`/document/${nextDoc.displayId}`} className="hover:opacity-50 transition-opacity flex items-center gap-2">
@@ -372,10 +370,8 @@ export default async function DocumentDetailPage({
             <span className="text-[#bbb4a4] flex items-center gap-2"><span>←</span> OLDER DOCUMENT</span>
           )}
         </div>
-        <div className="w-full text-center mt-12">
-          <Link href="/" className="font-mono text-sm tracking-widest hover:text-[#57534e] transition-colors border border-[#2e2a24] px-10 py-3 hover:bg-[#2e2a24] hover:text-[#f4efe4]">
-            RETURN TO DIRECTORY
-          </Link>
+        <div className="w-1/3 flex justify-center">
+          {/* RETURN TO DIRECTORY は廃止 */}
         </div>
         <div className="w-1/3 flex justify-end">
           {prevDoc ? (
@@ -386,7 +382,9 @@ export default async function DocumentDetailPage({
             <span className="text-[#bbb4a4] flex items-center gap-2">NEWER DOCUMENT <span>→</span></span>
           )}
         </div>
-      </footer>
+      </nav>
+
+      <SiteFooter />
     </div>
   );
 }
