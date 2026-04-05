@@ -93,12 +93,17 @@ export async function createDocumentAction(prevState: any, formData: FormData) {
     const genre = await prisma.genre.findUnique({ where: { id: genreId } });
     if (!genre) return { error: '無効なジャンルです' };
 
+    // プランB: すでにクライアントでアップロード済みのURLを受け取る
     const thumbnailUrl = await handleFileUpload(formData);
     const displayId = await generateDisplayId(genre.code);
     
+    // 日付の安全な変換
     let collectedAt = new Date();
     if (collectedAtStr) {
-      collectedAt = new Date(collectedAtStr);
+      const d = new Date(collectedAtStr);
+      if (!isNaN(d.getTime())) {
+        collectedAt = d;
+      }
     }
 
     const mediaRecords = mediaRecordsData ? JSON.parse(mediaRecordsData) : [];
@@ -121,10 +126,10 @@ export async function createDocumentAction(prevState: any, formData: FormData) {
         mediaRecords: {
           create: mediaRecords.map((m: any, index: number) => ({
             label: m.label,
-            title: m.title,
-            description: m.description,
-            url: m.url,
-            transcript: m.transcript,
+            title: m.title || '',
+            description: m.description || '',
+            url: m.url || null,
+            transcript: m.transcript || null,
             order: m.order ?? index,
           })),
         },
@@ -136,7 +141,7 @@ export async function createDocumentAction(prevState: any, formData: FormData) {
     revalidatePath('/sena-auth/dashboard');
   } catch (e: any) {
     console.error('Create Error:', e);
-    return { error: e.message || '資料の作成中に予期せぬエラーが発生しました' };
+    return { error: e.message || '資料の保存中に予期せぬエラーが発生しました' };
   }
 
   if (success) {
@@ -168,9 +173,13 @@ export async function updateDocumentAction(prevState: any, formData: FormData) {
 
     const thumbnailUrl = await handleFileUpload(formData);
 
+    // 日付の安全な変換
     let collectedAt = new Date();
     if (collectedAtStr) {
-      collectedAt = new Date(collectedAtStr);
+      const d = new Date(collectedAtStr);
+      if (!isNaN(d.getTime())) {
+        collectedAt = d;
+      }
     }
 
     const mediaRecords = mediaRecordsData ? JSON.parse(mediaRecordsData) : [];
@@ -205,10 +214,10 @@ export async function updateDocumentAction(prevState: any, formData: FormData) {
           data: mediaRecords.map((m: any, index: number) => ({
             documentId: id,
             label: m.label,
-            title: m.title,
-            description: m.description,
-            url: m.url,
-            transcript: m.transcript,
+            title: m.title || '',
+            description: m.description || '',
+            url: m.url || null,
+            transcript: m.transcript || null,
             order: m.order ?? index,
           })),
         });
