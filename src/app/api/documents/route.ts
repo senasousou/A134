@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { adminSupabase } from '@/lib/admin-supabase';
 import { generateDisplayId } from '@/lib/id-generator';
+import { revalidatePath } from 'next/cache';
 
 // POST: 新規作成
 export async function POST(req: NextRequest) {
@@ -97,6 +98,11 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // キャッシュ更新（トップ・一覧・詳細ページを即時反映）
+    revalidatePath('/');
+    revalidatePath('/sena-auth/dashboard');
+    revalidatePath(`/document/${displayId}`);
+
     return NextResponse.json({ success: true, displayId });
   } catch (err: any) {
     console.error('POST /api/documents error:', err);
@@ -190,6 +196,11 @@ export async function PUT(req: NextRequest) {
         })),
       });
     }
+
+    // キャッシュ更新（トップ・一覧・詳細ページを即時反映）
+    revalidatePath('/');
+    revalidatePath('/sena-auth/dashboard');
+    revalidatePath(`/document/${doc.displayId}`);
 
     return NextResponse.json({ success: true, displayId: doc.displayId });
   } catch (err: any) {
