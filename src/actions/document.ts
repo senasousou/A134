@@ -137,15 +137,13 @@ export async function createDocumentAction(prevState: any, formData: FormData) {
     });
 
     success = true;
-    revalidatePath('/');
-    revalidatePath('/sena-auth/dashboard');
   } catch (e: any) {
     console.error('Create Error:', e);
     return { error: e.message || '資料の保存中に予期せぬエラーが発生しました' };
   }
 
   if (success) {
-    redirect('/sena-auth/dashboard');
+    return { success: true };
   }
 }
 
@@ -225,16 +223,13 @@ export async function updateDocumentAction(prevState: any, formData: FormData) {
     });
 
     success = true;
-    revalidatePath('/');
-    if (displayId) revalidatePath(`/document/${displayId}`);
-    revalidatePath('/sena-auth/dashboard');
   } catch (e: any) {
     console.error('Update Error:', e);
     return { error: e.message || '資料の更新中に予期せぬエラーが発生しました' };
   }
 
   if (success) {
-    redirect('/sena-auth/dashboard');
+    return { success: true, displayId };
   }
 }
 

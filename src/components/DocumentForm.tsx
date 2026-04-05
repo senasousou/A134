@@ -63,8 +63,14 @@ export default function DocumentForm({
         formData.set('uploadedThumbnailUrl', result.url);
       }
 
-      // Supabase へのアップロードが完了したら、Server Action を呼び出す
-      await formAction(formData);
+      // API 経由でのアップロードが完了したら、Server Action を呼び出す
+      const result = await (formAction(formData) as any);
+
+      if (result?.success) {
+        // 保存成功: ブラウザ側で明示的に画面を移動・更新させる (プランD)
+        router.push('/sena-auth/dashboard');
+        router.refresh();
+      }
     } catch (err: any) {
       console.error('Client Upload Error:', err);
       setUploadError(err.message || 'アップロードに失敗しました');
