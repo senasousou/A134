@@ -29,7 +29,7 @@ export default async function EditNotePage({ params }: { params: Promise<{ slug:
           slug: note.slug,
           title: note.title,
           date: note.date,
-          excerpt: note.excerpt,
+          excerpt: note.excerpt ?? '',
           content: note.content,
           confidentialLevel: note.confidentialLevel
         }} 
