@@ -163,10 +163,10 @@ export default async function Home({
                       <span className="font-mono text-sm tracking-widest font-bold">DOC134-000-ORIGIN</span>
                     </div>
                     <h3 className="font-serif text-3xl font-bold leading-snug mb-4 tracking-widest">
-                      記録資料 零号（てんげん起源）
+                      {originDoc?.title ?? '記録資料 零号（てんげん起源）'}
                     </h3>
                     <p className="font-serif text-sm opacity-80 leading-relaxed tracking-wider line-clamp-2">
-                      すべては はるか太古のふたりから。この宇宙は ふたりの願いから生まれたという。お互いを探し求める想いが 引力を生み出し 宇宙を覆う呪いとなった……
+                      {originDoc?.content ?? 'すべては はるか太古のふたりから。'}
                     </p>
                   </div>
                 </div>
