@@ -14,6 +14,11 @@ async function handleFileUpload(formData: FormData): Promise<string | undefined>
       return formData.get('existingThumbnailUrl') as string | undefined;
     }
 
+    // 環境変数の存在チェック (念のため)
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      throw new Error('Supabase の接続設定が見つかりません。環境変数を確認してください。');
+    }
+
     // Vercel の 4.5MB 制限を考慮し、4MB を上限とする
     const MAX_SIZE = 4 * 1024 * 1024;
     if (file.size > MAX_SIZE) {
@@ -25,28 +30,32 @@ async function handleFileUpload(formData: FormData): Promise<string | undefined>
     const baseName = path.basename(file.name, ext).replace(/[^a-zA-Z0-9_\-]/g, '');
     const fileName = `${Date.now()}-${baseName}${ext}`;
 
-    // バイナリデータに変換 (Vercel 上での安定性向上のため)
+    // バイナリデータに確実に変換 (Node.js 互換性のため)
     const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const uint8Array = new Uint8Array(arrayBuffer);
 
     // Supabase Storage にアップロード
-    const { data, error } = await supabase.storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
       .from('uploads')
-      .upload(fileName, buffer, {
+      .upload(fileName, uint8Array, {
         cacheControl: '3600',
         upsert: false,
         contentType: file.type || 'image/jpeg'
       });
 
-    if (error) {
-      console.error('Supabase Storage Error:', error);
-      throw new Error(`画像の保存に失敗しました: ${error.message}`);
+    if (uploadError) {
+      console.error('Supabase Storage Error:', uploadError);
+      throw new Error(`画像の保存に失敗しました: ${uploadError.message}`);
     }
 
     // 公開URLを取得
     const { data: publicData } = supabase.storage
       .from('uploads')
       .getPublicUrl(fileName);
+
+    if (!publicData || !publicData.publicUrl) {
+      throw new Error('公開URLの取得に失敗しました。');
+    }
 
     return publicData.publicUrl;
   } catch (err: any) {
@@ -56,6 +65,7 @@ async function handleFileUpload(formData: FormData): Promise<string | undefined>
 }
 
 export async function createDocumentAction(prevState: any, formData: FormData) {
+  let success = false;
   try {
     const title = formData.get('title') as string;
     const content = formData.get('content') as string;
@@ -114,17 +124,24 @@ export async function createDocumentAction(prevState: any, formData: FormData) {
         },
       },
     });
+
+    success = true;
+    revalidatePath('/');
+    revalidatePath('/sena-auth/dashboard');
   } catch (e: any) {
     console.error('Create Error:', e);
-    return { error: e.message || '資料の作成に失敗しました' };
+    return { error: e.message || '資料の作成中に予期せぬエラーが発生しました' };
   }
 
-  revalidatePath('/');
-  revalidatePath('/sena-auth/dashboard');
-  redirect('/sena-auth/dashboard');
+  if (success) {
+    redirect('/sena-auth/dashboard');
+  }
 }
 
 export async function updateDocumentAction(prevState: any, formData: FormData) {
+  let success = false;
+  let displayId: string | undefined;
+
   try {
     const id = formData.get('id') as string;
     const title = formData.get('title') as string;
@@ -154,7 +171,7 @@ export async function updateDocumentAction(prevState: any, formData: FormData) {
 
     await prisma.$transaction(async (tx) => {
       // Update document
-      await tx.document.update({
+      const doc = await tx.document.update({
         where: { id },
         data: {
           title,
@@ -170,6 +187,7 @@ export async function updateDocumentAction(prevState: any, formData: FormData) {
           collectedAt,
         },
       });
+      displayId = doc.displayId;
 
       // Simple strategy: delete all existing media records and recreate them
       await tx.mediaRecord.deleteMany({
@@ -191,16 +209,18 @@ export async function updateDocumentAction(prevState: any, formData: FormData) {
       }
     });
 
-    const updatedDoc = await prisma.document.findUnique({ where: { id } });
+    success = true;
     revalidatePath('/');
-    revalidatePath(`/document/${updatedDoc?.displayId}`);
+    if (displayId) revalidatePath(`/document/${displayId}`);
     revalidatePath('/sena-auth/dashboard');
   } catch (e: any) {
     console.error('Update Error:', e);
-    return { error: e.message || '資料の更新に失敗しました' };
+    return { error: e.message || '資料の更新中に予期せぬエラーが発生しました' };
   }
 
-  redirect('/sena-auth/dashboard');
+  if (success) {
+    redirect('/sena-auth/dashboard');
+  }
 }
 
 export async function deleteDocument(id: string) {
