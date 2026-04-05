@@ -4,41 +4,15 @@ import { useRouter } from 'next/navigation';
 import { useActionState, useState } from 'react';
 import { createDocumentAction, updateDocumentAction, deleteDocument } from '@/actions/document';
 import type { Genre } from '@prisma/client';
-
-type MediaRecord = {
-  id?: string;
-  label: string;
-  title: string;
-  description: string;
-  url?: string | null;
-  transcript?: string | null;
-  order: number;
-};
-
-type DocumentData = {
-  id?: string;
-  title: string;
-  content: string;
-  genreId: string;
-  thumbnailUrl?: string | null;
-  tags: string;
-  displayId?: string;
-  externalLinkName?: string | null;
-  externalLinkUrl?: string | null;
-  externalLink2Name?: string | null;
-  externalLink2Url?: string | null;
-  externalLink3Name?: string | null;
-  externalLink3Url?: string | null;
-  collectedAt?: Date | string | null;
-  mediaRecords?: MediaRecord[];
-};
+import { supabase } from '@/lib/supabase';
+import path from 'path';
 
 export default function DocumentForm({
   initialData,
   genres,
   isEdit = false,
 }: {
-  initialData?: DocumentData;
+  initialData?: any; 
   genres: Genre[];
   isEdit?: boolean;
 }) {
@@ -49,10 +23,61 @@ export default function DocumentForm({
     { error: '' }
   );
   
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-  const [mediaRecords, setMediaRecords] = useState<MediaRecord[]>(
-    initialData?.mediaRecords ? [...initialData.mediaRecords].sort((a, b) => a.order - b.order) : []
+  const [mediaRecords, setMediaRecords] = useState<any[]>(
+    initialData?.mediaRecords ? [...initialData.mediaRecords].sort((a: any, b: any) => a.order - b.order) : []
   );
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setUploadError('');
+    setIsUploading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const file = formData.get('thumbnail') as File | null;
+
+    try {
+      // プランB: クライアント側で先にアップロード
+      if (file && file.size > 0) {
+        // Vercel の制限に関わらずブラウザから送れるが、念のため 10MB 制限
+        if (file.size > 10 * 1024 * 1024) {
+          throw new Error('画像サイズが大きすぎます (10MB以下にしてください)');
+        }
+
+        const ext = path.extname(file.name);
+        const baseName = path.basename(file.name, ext).replace(/[^a-zA-Z0-9_\-]/g, '');
+        const fileName = `${Date.now()}-${baseName}${ext}`;
+
+        const { data, error } = await supabase.storage
+          .from('uploads')
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (error) {
+          throw new Error(`画像の送信に失敗しました: ${error.message}`);
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('uploads')
+          .getPublicUrl(fileName);
+
+        // アップロード済みの URL を FormData に格納してサーバーへ送信
+        formData.set('uploadedThumbnailUrl', publicUrl);
+      }
+
+      // Supabase へのアップロードが完了したら、Server Action を呼び出す
+      await formAction(formData);
+    } catch (err: any) {
+      console.error('Client Upload Error:', err);
+      setUploadError(err.message || 'アップロードに失敗しました');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleDelete = async () => {
     if (!initialData?.id) return;
@@ -68,8 +93,9 @@ export default function DocumentForm({
     }
   };
 
+  // ... (addMediaRecord, removeMediaRecord, updateMediaRecord, moveMediaRecord remain the same)
   const addMediaRecord = () => {
-    const newRecord: MediaRecord = {
+    const newRecord = {
       label: `RECORD ${String(mediaRecords.length + 1).padStart(2, '0')}`,
       title: '',
       description: '',
@@ -81,10 +107,10 @@ export default function DocumentForm({
   };
 
   const removeMediaRecord = (index: number) => {
-    setMediaRecords(mediaRecords.filter((_, i) => i !== index));
+    setMediaRecords(mediaRecords.filter((_: any, i: number) => i !== index));
   };
 
-  const updateMediaRecord = (index: number, field: keyof MediaRecord, value: any) => {
+  const updateMediaRecord = (index: number, field: string, value: any) => {
     const updated = [...mediaRecords];
     updated[index] = { ...updated[index], [field]: value };
     setMediaRecords(updated);
@@ -98,14 +124,17 @@ export default function DocumentForm({
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
     [updated[index], updated[targetIndex]] = [updated[targetIndex], updated[index]];
     
-    // Update order values
     const reordered = updated.map((m, i) => ({ ...m, order: i }));
     setMediaRecords(reordered);
   };
 
   return (
-    <form action={formAction} className="space-y-6 max-w-4xl" encType="multipart/form-data">
-      {state?.error && <p className="text-red-700 bg-red-50 p-4 border border-red-200">{state.error}</p>}
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
+      {(state?.error || uploadError) && (
+        <p className="text-red-700 bg-red-50 p-4 border border-red-200">
+          {state?.error || uploadError}
+        </p>
+      )}
       
       {/* Hidden input for media records JSON */}
       <input type="hidden" name="mediaRecordsData" value={JSON.stringify(mediaRecords)} />
@@ -118,6 +147,7 @@ export default function DocumentForm({
         </div>
       )}
 
+      {/* Grid for form fields */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-6">
           <div>
@@ -179,7 +209,6 @@ export default function DocumentForm({
           <div className="p-4 border border-[var(--border)] bg-white/30 space-y-6">
             <h4 className="text-sm font-bold border-b cosmic-border pb-2 uppercase tracking-widest text-[#5a5248]">外部リンク (最大3件)</h4>
             
-            {/* Link 1 */}
             <div className="space-y-3">
               <p className="text-[10px] font-mono tracking-widest text-[#5a5248]">LINK 01</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -200,7 +229,6 @@ export default function DocumentForm({
               </div>
             </div>
 
-            {/* Link 2 */}
             <div className="space-y-3 pt-2 border-t border-dashed border-[#bbb4a4]">
               <p className="text-[10px] font-mono tracking-widest text-[#5a5248]">LINK 02</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -221,7 +249,6 @@ export default function DocumentForm({
               </div>
             </div>
 
-            {/* Link 3 */}
             <div className="space-y-3 pt-2 border-t border-dashed border-[#bbb4a4]">
               <p className="text-[10px] font-mono tracking-widest text-[#5a5248]">LINK 03</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -257,6 +284,9 @@ export default function DocumentForm({
                 <input type="hidden" name="existingThumbnailUrl" value={initialData.thumbnailUrl} />
               </div>
             )}
+            <p className="text-[10px] text-[var(--muted-foreground)] mt-1 italic">
+              ※直接アップロード方式によりクラッシュを回避します。
+            </p>
           </div>
         </div>
 
@@ -272,7 +302,6 @@ export default function DocumentForm({
             />
           </div>
 
-          {/* メディア記録セクション */}
           <div className="p-6 border border-[#bbb4a4] bg-[#f4f1ea] space-y-8">
             <div className="flex justify-between items-center border-b border-[#bbb4a4] pb-3">
               <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-[#5a5248]">関連する音声・映像記録</h4>
@@ -291,16 +320,14 @@ export default function DocumentForm({
               </p>
             ) : (
               <div className="space-y-12">
-                {mediaRecords.map((record, index) => (
+                {mediaRecords.map((record: any, index: number) => (
                   <div key={index} className="relative p-5 border border-dashed border-[#bbb4a4] bg-white/40 space-y-5">
-                    {/* 操作ボタン */}
                     <div className="absolute -top-3 right-2 flex gap-2">
                        <button
                         type="button"
                         onClick={() => moveMediaRecord(index, 'up')}
                         disabled={index === 0}
                         className="p-1 bg-white border border-[#bbb4a4] hover:bg-[#f0ecdf] disabled:opacity-30"
-                        title="上へ"
                       >
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
@@ -311,7 +338,6 @@ export default function DocumentForm({
                         onClick={() => moveMediaRecord(index, 'down')}
                         disabled={index === mediaRecords.length - 1}
                         className="p-1 bg-white border border-[#bbb4a4] hover:bg-[#f0ecdf] disabled:opacity-30"
-                        title="下へ"
                       >
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -321,7 +347,6 @@ export default function DocumentForm({
                         type="button"
                         onClick={() => removeMediaRecord(index)}
                         className="p-1 bg-red-100 text-red-700 border border-red-200 hover:bg-red-200"
-                        title="削除"
                       >
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -337,7 +362,6 @@ export default function DocumentForm({
                           value={record.label}
                           onChange={(e) => updateMediaRecord(index, 'label', e.target.value)}
                           className="w-full border border-[#bbb4a4] bg-transparent p-2 text-sm focus:outline-none"
-                          placeholder="RECORD 01"
                         />
                       </div>
                       <div>
@@ -347,7 +371,6 @@ export default function DocumentForm({
                           value={record.title}
                           onChange={(e) => updateMediaRecord(index, 'title', e.target.value)}
                           className="w-full border border-[#bbb4a4] bg-transparent p-2 text-sm focus:outline-none"
-                          placeholder="音声記録 / 映像記録"
                         />
                       </div>
                     </div>
@@ -359,28 +382,25 @@ export default function DocumentForm({
                         value={record.description}
                         onChange={(e) => updateMediaRecord(index, 'description', e.target.value)}
                         className="w-full border border-[#bbb4a4] bg-transparent p-2 text-sm focus:outline-none"
-                        placeholder="資料の詳細説明..."
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-mono tracking-widest text-[#5a5248] mb-1">メディア (YOUTUBE URL / ID)</label>
+                      <label className="block text-[10px] font-mono tracking-widest text-[#5a5248] mb-1">メディアURL</label>
                       <input
                         type="text"
                         value={record.url || ''}
                         onChange={(e) => updateMediaRecord(index, 'url', e.target.value)}
                         className="w-full border border-[#bbb4a4] bg-transparent p-2 text-sm focus:outline-none"
-                        placeholder="https://www.youtube.com/watch?v=..."
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-mono tracking-widest text-[#5a5248] mb-1">資料内容 (書き起こし)</label>
+                      <label className="block text-[10px] font-mono tracking-widest text-[#5a5248] mb-1">書き起こし</label>
                       <textarea
                         value={record.transcript || ''}
                         onChange={(e) => updateMediaRecord(index, 'transcript', e.target.value)}
-                        className="w-full border border-[#bbb4a4] bg-transparent p-2 text-sm focus:outline-none min-h-[100px] font-serif leading-relaxed"
-                        placeholder="音声や映像の内容をここに記録..."
+                        className="w-full border border-[#bbb4a4] bg-transparent p-2 text-sm focus:outline-none min-h-[100px] font-serif"
                       />
                     </div>
                   </div>
@@ -397,8 +417,8 @@ export default function DocumentForm({
             <button
               type="button"
               onClick={handleDelete}
-              disabled={isDeleting || isPending}
-              className="px-6 py-3 border border-red-700 text-red-700 hover:bg-red-50 hover:border-red-900 transition-colors tracking-widest disabled:opacity-50 text-sm"
+              disabled={isDeleting || isPending || isUploading}
+              className="px-6 py-3 border border-red-700 text-red-700 hover:bg-red-50 disabled:opacity-50 text-sm tracking-widest"
             >
               資料抹消
             </button>
@@ -408,16 +428,16 @@ export default function DocumentForm({
           <button
             type="button"
             onClick={() => router.push('/sena-auth/dashboard')}
-            className="px-6 py-3 border border-[var(--border)] hover:bg-[var(--muted)] transition-colors tracking-widest text-[var(--muted-foreground)] text-sm"
+            className="px-6 py-3 border border-[var(--border)] hover:bg-[var(--muted)] text-[var(--muted-foreground)] text-sm tracking-widest"
           >
             キャンセル
           </button>
           <button
             type="submit"
-            disabled={isPending || isDeleting}
+            disabled={isPending || isDeleting || isUploading}
             className="px-8 py-3 bg-[var(--foreground)] text-[var(--background)] hover:bg-black transition-colors tracking-widest disabled:opacity-50 text-sm"
           >
-            {isPending ? '処理中...' : isEdit ? '更新を保存' : '新規登録として記録'}
+            {isUploading ? '画像を送信中...' : isPending ? '記録を保存中...' : isEdit ? '更新を保存' : '新規登録として記録'}
           </button>
         </div>
       </div>

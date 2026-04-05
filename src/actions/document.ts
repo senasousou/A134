@@ -9,6 +9,12 @@ import path from 'path';
 
 async function handleFileUpload(formData: FormData): Promise<string | undefined> {
   try {
+    // クライアント側ですでにアップロード済みの URL があれば、それを優先する (プランB)
+    const uploadedUrl = formData.get('uploadedThumbnailUrl') as string | null;
+    if (uploadedUrl) {
+      return uploadedUrl;
+    }
+
     const file = formData.get('thumbnail') as File | null;
     if (!file || file.size === 0) {
       return formData.get('existingThumbnailUrl') as string | undefined;
