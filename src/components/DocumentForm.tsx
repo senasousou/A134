@@ -39,38 +39,28 @@ export default function DocumentForm({
     const file = formData.get('thumbnail') as File | null;
 
     try {
-      // プランB: クライアント側で先にアップロード
+      // プランC: 専用 API 窓口 (/api/upload) を経由してアップロード
       if (file && file.size > 0) {
-        // Vercel の制限に関わらずブラウザから送れるが、念のため 10MB 制限
         if (file.size > 10 * 1024 * 1024) {
           throw new Error('画像サイズが大きすぎます (10MB以下にしてください)');
         }
 
-        // 日本語を含むファイル名を安全な名前に変換 (Node.js の path モジュール不使用)
-        const fileNameParts = file.name.split('.');
-        const ext = fileNameParts.length > 1 ? `.${fileNameParts.pop()}` : '';
-        // 日本語・記号を取り除き、英数字のみにする。空になった場合は 'upload' を使う。
-        const baseNameCandidate = file.name.replace(ext, '').replace(/[^a-zA-Z0-9_\-]/g, '');
-        const baseName = baseNameCandidate || 'upload';
-        const fileName = `${Date.now()}-${baseName}${ext}`;
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', file);
 
-        const { data, error } = await supabase.storage
-          .from('uploads')
-          .upload(fileName, file, {
-            cacheControl: '3600',
-            upsert: false
-          });
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: uploadFormData,
+        });
 
-        if (error) {
-          throw new Error(`画像の送信に失敗しました: ${error.message}`);
+        const result = await res.json();
+
+        if (!res.ok || result.error) {
+          throw new Error(result.error || '画像の送信に失敗しました');
         }
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('uploads')
-          .getPublicUrl(fileName);
-
-        // アップロード済みの URL を FormData に格納してサーバーへ送信
-        formData.set('uploadedThumbnailUrl', publicUrl);
+        // 窓口から返ってきた URL を FormData に格納して Server Action へ
+        formData.set('uploadedThumbnailUrl', result.url);
       }
 
       // Supabase へのアップロードが完了したら、Server Action を呼び出す
