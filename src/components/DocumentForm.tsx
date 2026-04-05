@@ -5,7 +5,6 @@ import { useActionState, useState } from 'react';
 import { createDocumentAction, updateDocumentAction, deleteDocument } from '@/actions/document';
 import type { Genre } from '@prisma/client';
 import { supabase } from '@/lib/supabase';
-import path from 'path';
 
 export default function DocumentForm({
   initialData,
@@ -35,7 +34,8 @@ export default function DocumentForm({
     setUploadError('');
     setIsUploading(true);
 
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     const file = formData.get('thumbnail') as File | null;
 
     try {
@@ -46,8 +46,12 @@ export default function DocumentForm({
           throw new Error('画像サイズが大きすぎます (10MB以下にしてください)');
         }
 
-        const ext = path.extname(file.name);
-        const baseName = path.basename(file.name, ext).replace(/[^a-zA-Z0-9_\-]/g, '');
+        // 日本語を含むファイル名を安全な名前に変換 (Node.js の path モジュール不使用)
+        const fileNameParts = file.name.split('.');
+        const ext = fileNameParts.length > 1 ? `.${fileNameParts.pop()}` : '';
+        // 日本語・記号を取り除き、英数字のみにする。空になった場合は 'upload' を使う。
+        const baseNameCandidate = file.name.replace(ext, '').replace(/[^a-zA-Z0-9_\-]/g, '');
+        const baseName = baseNameCandidate || 'upload';
         const fileName = `${Date.now()}-${baseName}${ext}`;
 
         const { data, error } = await supabase.storage
