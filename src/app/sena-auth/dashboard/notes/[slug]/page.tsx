@@ -1,16 +1,16 @@
-import { getNoteData } from '@/lib/notes';
+import { getAdminNoteBySlugAction } from '@/actions/content';
 import NoteForm from '@/components/NoteForm';
 import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const note = await getNoteData(slug);
+  const note = await getAdminNoteBySlugAction(slug);
   return { title: `手記編集: ${note?.title || slug} - 管理領域` };
 }
 
 export default async function EditNotePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const note = await getNoteData(slug);
+  const note = await getAdminNoteBySlugAction(slug);
 
   if (!note) {
     notFound();

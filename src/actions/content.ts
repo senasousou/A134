@@ -1,32 +1,58 @@
 'use server';
 
-import fs from 'fs/promises';
-import path from 'path';
-import matter from 'gray-matter';
+import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-
-const worldDataPath = path.join(process.cwd(), 'src/data/world-overview.json');
-const notesDirectory = path.join(process.cwd(), 'src/content/notes');
 
 // --- World Overview ---
 
 export async function getWorldOverviewAction() {
-  const content = await fs.readFile(worldDataPath, 'utf8');
-  return JSON.parse(content);
+  const overview = await prisma.worldOverview.findFirst({
+    where: { id: 'default' },
+    include: {
+      sections: {
+        orderBy: { order: 'asc' }
+      }
+    }
+  });
+  
+  if (!overview) {
+    return { title: '', subtitle: '', sections: [] };
+  }
+  
+  return overview;
 }
 
 export async function updateWorldOverviewAction(prevState: any, formData: FormData) {
   try {
     const title = formData.get('title') as string;
     const subtitle = formData.get('subtitle') as string;
-    
-    // セクションデータの復元（単純化のため、複数のセクションを配列として受け取る）
     const sectionsJson = formData.get('sectionsJson') as string;
     const sections = JSON.parse(sectionsJson);
 
-    const newData = { title, subtitle, sections };
-    await fs.writeFile(worldDataPath, JSON.stringify(newData, null, 2), 'utf8');
+    await prisma.$transaction(async (tx) => {
+      const overview = await tx.worldOverview.upsert({
+        where: { id: 'default' },
+        update: { title, subtitle },
+        create: { id: 'default', title, subtitle },
+      });
+
+      // セクションの更新（一度削除して作り直す）
+      await tx.worldSection.deleteMany({ where: { overviewId: overview.id } });
+      
+      if (sections && sections.length > 0) {
+        await tx.worldSection.createMany({
+          data: sections.map((s: any, index: number) => ({
+            title: s.title,
+            content: s.content,
+            lastUpdated: s.lastUpdated,
+            confidentiality: s.confidentiality,
+            order: index,
+            overviewId: overview.id,
+          }))
+        });
+      }
+    });
     
     revalidatePath('/about');
     revalidatePath('/sena-auth/dashboard/world-overview');
@@ -38,6 +64,18 @@ export async function updateWorldOverviewAction(prevState: any, formData: FormDa
 }
 
 // --- Administrator Notes ---
+
+export async function getAdminNotesAction() {
+  return await prisma.adminNote.findMany({
+    orderBy: { date: 'desc' }
+  });
+}
+
+export async function getAdminNoteBySlugAction(slug: string) {
+  return await prisma.adminNote.findUnique({
+    where: { slug }
+  });
+}
 
 export async function saveNoteAction(prevState: any, formData: FormData) {
   try {
@@ -53,22 +91,25 @@ export async function saveNoteAction(prevState: any, formData: FormData) {
       return { error: '必須項目が不足しています' };
     }
 
-    // slugが変更された場合、古いファイルを消す
-    if (originalSlug && originalSlug !== slug) {
-      const oldPath = path.join(notesDirectory, `${originalSlug}.md`);
-      try { await fs.unlink(oldPath); } catch (e) {}
-    }
-
-    const filePath = path.join(notesDirectory, `${slug}.md`);
-    
-    const fileContent = matter.stringify(content, {
-      title,
-      date,
-      excerpt,
-      confidentialLevel: confidentialLevel || 'LEVEL 1'
+    await prisma.adminNote.upsert({
+      where: { slug: originalSlug || slug },
+      update: {
+        slug,
+        title,
+        date,
+        excerpt,
+        content,
+        confidentialLevel: confidentialLevel || 'LEVEL 1'
+      },
+      create: {
+        slug,
+        title,
+        date,
+        excerpt,
+        content,
+        confidentialLevel: confidentialLevel || 'LEVEL 1'
+      }
     });
-
-    await fs.writeFile(filePath, fileContent, 'utf8');
 
     revalidatePath('/administrator');
     revalidatePath(`/administrator/${slug}`);
@@ -82,8 +123,9 @@ export async function saveNoteAction(prevState: any, formData: FormData) {
 
 export async function deleteNoteAction(slug: string) {
   try {
-    const filePath = path.join(notesDirectory, `${slug}.md`);
-    await fs.unlink(filePath);
+    await prisma.adminNote.delete({
+      where: { slug }
+    });
     
     revalidatePath('/administrator');
     revalidatePath('/sena-auth/dashboard/notes');

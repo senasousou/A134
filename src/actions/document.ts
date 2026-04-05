@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { generateDisplayId } from '@/lib/id-generator';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import fs from 'fs/promises';
+import { supabase } from '@/lib/supabase';
 import path from 'path';
 
 async function handleFileUpload(formData: FormData): Promise<string | undefined> {
@@ -13,23 +13,30 @@ async function handleFileUpload(formData: FormData): Promise<string | undefined>
     return formData.get('existingThumbnailUrl') as string | undefined;
   }
 
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-  // 安全なファイル名を作る
+  // ファイル名から非ASCII文字や記号を安全なものに置換
   const ext = path.extname(file.name);
   const baseName = path.basename(file.name, ext).replace(/[^a-zA-Z0-9_\-]/g, '');
-  const finalName = `${Date.now()}-${baseName}${ext}`;
-  const uploadDir = path.join(process.cwd(), 'public/uploads');
+  const fileName = `${Date.now()}-${baseName}${ext}`;
 
-  // ensure directory exists (handled by bash script, but good to be safe)
-  try {
-    await fs.mkdir(uploadDir, { recursive: true });
-  } catch (e) {}
+  // Supabase Storage にアップロード
+  const { data, error } = await supabase.storage
+    .from('uploads')
+    .upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: false
+    });
 
-  const filepath = path.join(uploadDir, finalName);
-  await fs.writeFile(filepath, buffer);
+  if (error) {
+    console.error('Supabase Storage Error:', error);
+    throw new Error(`画像の保存に失敗しました: ${error.message}`);
+  }
 
-  return `/uploads/${finalName}`;
+  // 公開URLを取得
+  const { data: { publicUrl } } = supabase.storage
+    .from('uploads')
+    .getPublicUrl(fileName);
+
+  return publicUrl;
 }
 
 export async function createDocumentAction(prevState: any, formData: FormData) {

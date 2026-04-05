@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { getSortedNotesMetadata } from '@/lib/notes';
 import { ObservationBadge, RestrictedLog } from '@/components/LoreStyles';
+import { getAdminNotesAction } from '@/actions/content';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,8 +9,8 @@ export const metadata = {
   description: '観測者・瀬名桑想による手記の一覧。',
 };
 
-export default function AdministratorListPage() {
-  const notes = getSortedNotesMetadata();
+export default async function AdministratorListPage() {
+  const notes = await getAdminNotesAction();
 
   return (
     <div className="max-w-4xl mx-auto p-6 md:p-12 pt-12 md:pt-24 font-serif text-[var(--foreground)] pb-24">

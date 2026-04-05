@@ -60,7 +60,39 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+model WorldOverview {
+  id        String         @id @default(cuid())
+  title     String
+  subtitle  String
+  sections  WorldSection[]
+  updatedAt DateTime       @updatedAt
+}
+
+model WorldSection {
+  id              String        @id @default(cuid())
+  order           Int           @default(0)
+  title           String
+  content         String
+  lastUpdated     String?
+  confidentiality String?
+  overviewId      String
+  overview        WorldOverview @relation(fields: [overviewId], references: [id], onDelete: Cascade)
+}
+
+model AdminNote {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  title             String
+  date              String
+  excerpt           String?
+  content           String
+  confidentialLevel String   @default("LEVEL 1")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
 model TimelineCategory {
+// ... (既存の定義)
   id        String          @id @default(cuid())
   name      String          @unique // "環境", "人物", "現象" など
   events    TimelineEvent[]

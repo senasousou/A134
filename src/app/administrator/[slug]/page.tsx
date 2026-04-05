@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getNoteData } from '@/lib/notes';
 import ReactMarkdown from 'react-markdown';
-import { ObservationBadge, RestrictedLog, AdministratorNote } from '@/components/LoreStyles';
+import { ObservationBadge, RestrictedLog } from '@/components/LoreStyles';
+import { getAdminNoteBySlugAction } from '@/actions/content';
 
 export default async function NoteDetailPage({
   params,
@@ -10,7 +10,7 @@ export default async function NoteDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const note = await getNoteData(slug);
+  const note = await getAdminNoteBySlugAction(slug);
 
   if (!note) {
     notFound();

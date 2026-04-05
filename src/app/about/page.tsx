@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import worldData from '@/data/world-overview.json';
 import { ObservationBadge, RestrictedLog } from '@/components/LoreStyles';
+import { getWorldOverviewAction } from '@/actions/content';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,7 +9,9 @@ export const metadata = {
   description: '創作叙事詩「てんげん」の世界観・設定・理（ことわり）の解説。',
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const worldData = await getWorldOverviewAction();
+
   return (
     <div className="max-w-4xl mx-auto p-6 md:p-12 pt-12 md:pt-24 font-serif text-[var(--foreground)] pb-24">
       <header className="mb-20 border-b-2 border-[#1c1917] pb-10">
@@ -22,7 +24,7 @@ export default function AboutPage() {
       </header>
 
       <main className="prose prose-stone prose-lg max-w-none prose-p:leading-loose prose-p:tracking-wider prose-h2:tracking-widest prose-h2:border-b prose-h2:border-[#e7e0cd] prose-h2:pb-2">
-        {worldData.sections.map((section) => (
+        {worldData.sections.map((section: any) => (
           <section key={section.id} className="mb-20 relative group">
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
               <h2 className="m-0 border-none pb-0 text-2xl md:text-3xl">
