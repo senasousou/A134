@@ -222,7 +222,7 @@ export default async function Home({
                   
                   <div className="mt-auto pt-4 flex items-center justify-between">
                     <span className="text-[10px] text-[#5a5248] font-mono tracking-widest">
-                      {new Date(doc.createdAt).toLocaleDateString('ja-JP')}
+                      {new Date(doc.collectedAt).toLocaleDateString('ja-JP')}
                     </span>
                   </div>
                 </div>
