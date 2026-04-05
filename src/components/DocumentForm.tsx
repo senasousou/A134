@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useActionState, useState } from 'react';
-import { uploadThumbnailAction, createDocumentAction, updateDocumentAction, deleteDocument } from '@/actions/document';
+import { useState } from 'react';
+import { deleteDocument } from '@/actions/document';
 import type { Genre } from '@prisma/client';
 
 export default function DocumentForm({
@@ -28,43 +28,36 @@ export default function DocumentForm({
     e.preventDefault();
     setError('');
     setIsUploading(true);
-    setStatusMessage('1/2. 管理者権限で画像を直送しています...');
+    setStatusMessage('1/2. 画像とデータを送信しています...');
 
     const form = e.currentTarget;
     const formData = new FormData(form);
 
     try {
-      // プランG: 管理者権限 (Service Role) を利用した直送アクション
-      const uploadResult = await uploadThumbnailAction(formData);
+      // 画像 + DB 保存を API Route で一括処理
+      const method = isEdit ? 'PUT' : 'POST';
+      const res = await fetch('/api/documents', {
+        method,
+        body: formData,
+      });
 
-      if (uploadResult?.error) {
-        throw new Error(uploadResult.error);
+      setStatusMessage('2/2. 保存結果を確認しています...');
+
+      const result = await res.json();
+
+      if (!res.ok || result?.error) {
+        throw new Error(result?.error || `サーバーエラー (${res.status})`);
       }
 
-      if (uploadResult?.url) {
-        formData.set('uploadedThumbnailUrl', uploadResult.url);
-      }
-
-      setStatusMessage('2/2. データベースに記録を永久保存しています...');
-
-      // 直接サーバーアクションを呼び出す (useActionStateのマジックを使わない)
-      const saveAction = isEdit ? updateDocumentAction : createDocumentAction;
-      const result = await (saveAction(null, formData) as any);
-
-      if (result?.success) {
-        setStatusMessage('収蔵完了！ダッシュボードに戻ります...');
-        router.push('/sena-auth/dashboard');
-        router.refresh();
-      } else if (result?.error) {
-        throw new Error(result.error);
-      }
+      setStatusMessage('収蔵完了！ダッシュボードに戻ります...');
+      router.push('/sena-auth/dashboard');
+      router.refresh();
     } catch (err: any) {
-      console.error('Plan G Submit Error:', err);
+      console.error('Submit Error:', err);
       const msg = err.message || '予期せぬエラーが発生しました';
       setError(msg);
       setStatusMessage('');
       setIsUploading(false);
-      // 白い画面になる前にポップアップで知らせる
       alert(`保存に失敗しました: ${msg}`);
     }
   };
