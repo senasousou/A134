@@ -120,9 +120,9 @@ export default function DocumentForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
-      {(state?.error || uploadError) && (
+      {error && (
         <p className="text-red-700 bg-red-50 p-4 border border-red-200">
-          {state?.error || uploadError}
+          {error}
         </p>
       )}
       
