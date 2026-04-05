@@ -8,29 +8,34 @@ import { supabase } from '@/lib/supabase';
 import path from 'path';
 
 async function handleFileUpload(formData: FormData): Promise<string | undefined> {
-  const file = formData.get('thumbnail') as File | null;
-  if (!file || file.size === 0) {
-    return formData.get('existingThumbnailUrl') as string | undefined;
-  }
-
-  // Vercel の 4.5MB 制限を考慮し、4MB を上限とする
-  const MAX_SIZE = 4 * 1024 * 1024;
-  if (file.size > MAX_SIZE) {
-    throw new Error('画像サイズが大きすぎます (4MB以下にしてください)');
-  }
-
-  // ファイル名から非ASCII文字や記号を安全なものに置換
-  const ext = path.extname(file.name);
-  const baseName = path.basename(file.name, ext).replace(/[^a-zA-Z0-9_\-]/g, '');
-  const fileName = `${Date.now()}-${baseName}${ext}`;
-
   try {
+    const file = formData.get('thumbnail') as File | null;
+    if (!file || file.size === 0) {
+      return formData.get('existingThumbnailUrl') as string | undefined;
+    }
+
+    // Vercel の 4.5MB 制限を考慮し、4MB を上限とする
+    const MAX_SIZE = 4 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      throw new Error('画像サイズが大きすぎます (4MB以下にしてください)');
+    }
+
+    // ファイル名から非ASCII文字や記号を安全なものに置換
+    const ext = path.extname(file.name);
+    const baseName = path.basename(file.name, ext).replace(/[^a-zA-Z0-9_\-]/g, '');
+    const fileName = `${Date.now()}-${baseName}${ext}`;
+
+    // バイナリデータに変換 (Vercel 上での安定性向上のため)
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
     // Supabase Storage にアップロード
     const { data, error } = await supabase.storage
       .from('uploads')
-      .upload(fileName, file, {
+      .upload(fileName, buffer, {
         cacheControl: '3600',
-        upsert: false
+        upsert: false,
+        contentType: file.type || 'image/jpeg'
       });
 
     if (error) {
