@@ -188,6 +188,20 @@ export async function updateDocumentAction(prevState: any, formData: FormData) {
 }
 
 export async function deleteDocument(id: string) {
+  const doc = await prisma.document.findUnique({ where: { id } });
+  
+  if (doc?.thumbnailUrl) {
+    try {
+      // 公開 URL からファイル名のみを抽出 (例: https://.../uploads/filename.jpg -> filename.jpg)
+      const fileName = doc.thumbnailUrl.split('/').pop();
+      if (fileName) {
+        await supabase.storage.from('uploads').remove([fileName]);
+      }
+    } catch (e) {
+      console.error('Storage Delete Error:', e);
+    }
+  }
+
   await prisma.document.delete({
     where: { id },
   });
