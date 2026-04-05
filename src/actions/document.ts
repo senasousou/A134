@@ -108,32 +108,43 @@ export async function createDocumentAction(prevState: any, formData: FormData) {
 
     const mediaRecords = mediaRecordsData ? JSON.parse(mediaRecordsData) : [];
 
-    await prisma.document.create({
-      data: {
-        displayId,
-        title,
-        content,
-        genreId,
-        tags: tags || '',
-        thumbnailUrl: thumbnailUrl || null,
-        externalLinkName: externalLinkName || null,
-        externalLinkUrl: externalLinkUrl || null,
-        externalLink2Name: externalLink2Name || null,
-        externalLink2Url: externalLink2Url || null,
-        externalLink3Name: externalLink3Name || null,
-        externalLink3Url: externalLink3Url || null,
-        collectedAt,
-        mediaRecords: {
-          create: mediaRecords.map((m: any, index: number) => ({
-            label: m.label,
-            title: m.title || '',
-            description: m.description || '',
-            url: m.url || null,
-            transcript: m.transcript || null,
-            order: m.order ?? index,
-          })),
+    await prisma.$transaction(async (tx) => {
+      // 成功実績のある update と同じく、分割して確実に保存する
+      await tx.document.create({
+        data: {
+          displayId,
+          title,
+          content,
+          genreId,
+          tags: tags || '',
+          thumbnailUrl: thumbnailUrl || null,
+          externalLinkName: externalLinkName || null,
+          externalLinkUrl: externalLinkUrl || null,
+          externalLink2Name: externalLink2Name || null,
+          externalLink2Url: externalLink2Url || null,
+          externalLink3Name: externalLink3Name || null,
+          externalLink3Url: externalLink3Url || null,
+          collectedAt,
         },
-      },
+      });
+
+      if (mediaRecords.length > 0) {
+        // IDが確定した後にメディアレコードを流し込む
+        const newDoc = await tx.document.findUnique({ where: { displayId } });
+        if (newDoc) {
+          await tx.mediaRecord.createMany({
+            data: mediaRecords.map((m: any, index: number) => ({
+              documentId: newDoc.id,
+              label: m.label,
+              title: m.title || '',
+              description: m.description || '',
+              url: m.url || null,
+              transcript: m.transcript || null,
+              order: m.order ?? index,
+            })),
+          });
+        }
+      }
     });
 
     success = true;

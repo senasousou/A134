@@ -24,6 +24,7 @@ export default function DocumentForm({
   
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  const [statusMessage, setStatusMessage] = useState(''); // 進捗ログ用
   const [isDeleting, setIsDeleting] = useState(false);
   const [mediaRecords, setMediaRecords] = useState<any[]>(
     initialData?.mediaRecords ? [...initialData.mediaRecords].sort((a: any, b: any) => a.order - b.order) : []
@@ -33,6 +34,7 @@ export default function DocumentForm({
     e.preventDefault();
     setUploadError('');
     setIsUploading(true);
+    setStatusMessage('1/2. 画像を送信しています...');
 
     const form = e.currentTarget;
     const formData = new FormData(form);
@@ -63,18 +65,23 @@ export default function DocumentForm({
         formData.set('uploadedThumbnailUrl', result.url);
       }
 
-      // API 経由でのアップロードが完了したら、Server Action を呼び出す
-      const result = await (formAction(formData) as any);
+      setStatusMessage('2/2. データベースに記録を保存しています...');
 
-      if (result?.success) {
+      // API 経経でのアップロードが完了したら、Server Action を呼び出す
+      const resultAction = await (formAction(formData) as any);
+
+      if (resultAction?.success) {
+        setStatusMessage('保存完了！ダッシュボードに戻ります...');
         // 保存成功: ブラウザ側で明示的に画面を移動・更新させる (プランD)
         router.push('/sena-auth/dashboard');
         router.refresh();
+      } else if (resultAction?.error) {
+        throw new Error(resultAction.error);
       }
     } catch (err: any) {
-      console.error('Client Upload Error:', err);
-      setUploadError(err.message || 'アップロードに失敗しました');
-    } finally {
+      console.error('Client Submit Error:', err);
+      setUploadError(err.message || '予期せぬエラーが発生しました');
+      setStatusMessage('');
       setIsUploading(false);
     }
   };
