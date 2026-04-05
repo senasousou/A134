@@ -18,6 +18,8 @@ export async function createTimelineCategory(name: string) {
 
   const category = await prisma.timelineCategory.create({ data: { name } });
   revalidatePath('/sena-auth/dashboard/timeline');
+  revalidatePath('/sena-auth/dashboard/timeline/new');
+  revalidatePath('/timeline');
   return category;
 }
 
@@ -30,6 +32,7 @@ export async function updateTimelineCategory(id: string, name: string) {
     data: { name },
   });
   revalidatePath('/sena-auth/dashboard/timeline');
+  revalidatePath('/sena-auth/dashboard/timeline/new');
   revalidatePath('/timeline');
   return category;
 }

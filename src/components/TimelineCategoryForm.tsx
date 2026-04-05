@@ -1,31 +1,38 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect, useRef } from 'react';
 import { createTimelineCategory, updateTimelineCategory } from '@/actions/timeline';
 
 export default function TimelineCategoryForm({ initialData }: { initialData?: { id: string; name: string } }) {
   const isEdit = !!initialData;
-  const initialState = { message: '', error: '' };
+  const formRef = useRef<HTMLFormElement>(null);
+  const initialState = { message: '', error: '', success: false };
 
   const submitAction = async (prevState: any, formData: FormData) => {
     try {
       const name = formData.get('name') as string;
       if (isEdit && initialData?.id) {
         await updateTimelineCategory(initialData.id, name);
-        return { message: 'カテゴリを更新しました。', error: '' };
+        return { message: 'カテゴリを更新しました。', error: '', success: true };
       } else {
         await createTimelineCategory(name);
-        return { message: '新しいカテゴリを登録しました。', error: '' };
+        return { message: '新しいカテゴリを登録しました。', error: '', success: true };
       }
     } catch (e: any) {
-      return { message: '', error: e.message || '保存に失敗しました' };
+      return { message: '', error: e.message || '保存に失敗しました', success: false };
     }
   };
 
   const [state, formAction, isPending] = useActionState(submitAction, initialState);
 
+  useEffect(() => {
+    if (state.success && !isEdit) {
+      formRef.current?.reset();
+    }
+  }, [state, isEdit]);
+
   return (
-    <form action={formAction} className="border border-[var(--border)] p-4 bg-[var(--background)] mb-4 w-full">
+    <form ref={formRef} action={formAction} className="border border-[var(--border)] p-4 bg-[var(--background)] mb-4 w-full">
       <h3 className="text-sm font-serif mb-4 tracking-widest border-b cosmic-border pb-1">
         {isEdit ? 'カテゴリ編集' : '新規カテゴリ登録'}
       </h3>
