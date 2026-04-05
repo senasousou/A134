@@ -1,292 +1,16 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { generateDisplayId } from '@/lib/id-generator';
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { adminSupabase } from '@/lib/admin-supabase';
-import path from 'path';
+import { revalidatePath } from 'next/cache';
 
-// 管理者権限 (Service Role) を利用した高速直送アクション
-export async function uploadThumbnailAction(formData: FormData) {
-  try {
-    const file = formData.get('thumbnail') as File | null;
-    if (!file || file.size === 0) return { url: null };
-
-    // サーバーサイドでのサニタイズ
-    const fileNameParts = file.name.split('.');
-    const ext = fileNameParts.length > 1 ? `.${fileNameParts.pop()}` : '';
-    const baseNameCandidate = file.name.replace(ext, '').replace(/[^a-zA-Z0-9_\-]/g, '');
-    const baseName = baseNameCandidate || 'upload';
-    const fileName = `${Date.now()}-${baseName}${ext}`;
-
-    const { data, error: uploadError } = await adminSupabase.storage
-      .from('uploads')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
-
-    if (uploadError) {
-      console.error('Admin Upload Error:', uploadError);
-      throw new Error(`送信失敗: ${uploadError.message}`);
-    }
-
-    const { data: { publicUrl } } = adminSupabase.storage
-      .from('uploads')
-      .getPublicUrl(fileName);
-
-    return { url: publicUrl };
-  } catch (err: any) {
-    console.error('Upload Action Error:', err);
-    return { error: err.message };
-  }
-}
-
-async function handleFileUpload(formData: FormData): Promise<string | undefined> {
-  try {
-    // クライアント側ですでにアップロード済みの URL があれば、それを優先する (プランB)
-    const uploadedUrl = formData.get('uploadedThumbnailUrl') as string | null;
-    if (uploadedUrl) {
-      return uploadedUrl;
-    }
-
-    const file = formData.get('thumbnail') as File | null;
-    if (!file || file.size === 0) {
-      return formData.get('existingThumbnailUrl') as string | undefined;
-    }
-
-    // 環境変数の存在チェック (念のため)
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      throw new Error('Supabase の接続設定が見つかりません。環境変数を確認してください。');
-    }
-
-    // Vercel の 4.5MB 制限を考慮し、4MB を上限とする
-    const MAX_SIZE = 4 * 1024 * 1024;
-    if (file.size > MAX_SIZE) {
-      throw new Error('画像サイズが大きすぎます (4MB以下にしてください)');
-    }
-
-    // ファイル名から非ASCII文字や記号を安全なものに置換
-    const ext = path.extname(file.name);
-    const baseName = path.basename(file.name, ext).replace(/[^a-zA-Z0-9_\-]/g, '');
-    const fileName = `${Date.now()}-${baseName}${ext}`;
-
-    // バイナリデータに確実に変換 (Node.js 互換性のため)
-    const arrayBuffer = await file.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
-
-    // Supabase Storage にアップロード
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('uploads')
-      .upload(fileName, uint8Array, {
-        cacheControl: '3600',
-        upsert: false,
-        contentType: file.type || 'image/jpeg'
-      });
-
-    if (uploadError) {
-      console.error('Supabase Storage Error:', uploadError);
-      throw new Error(`画像の保存に失敗しました: ${uploadError.message}`);
-    }
-
-    // 公開URLを取得
-    const { data: publicData } = supabase.storage
-      .from('uploads')
-      .getPublicUrl(fileName);
-
-    if (!publicData || !publicData.publicUrl) {
-      throw new Error('公開URLの取得に失敗しました。');
-    }
-
-    return publicData.publicUrl;
-  } catch (err: any) {
-    console.error('File Upload Exception:', err);
-    throw err;
-  }
-}
-
-export async function createDocumentAction(prevState: any, formData: FormData) {
-  let success = false;
-  try {
-    const title = formData.get('title') as string;
-    const content = formData.get('content') as string;
-    const genreId = formData.get('genreId') as string;
-    const tags = formData.get('tags') as string;
-    const externalLinkName = formData.get('externalLinkName') as string | null;
-    const externalLinkUrl = formData.get('externalLinkUrl') as string | null;
-    const externalLink2Name = formData.get('externalLink2Name') as string | null;
-    const externalLink2Url = formData.get('externalLink2Url') as string | null;
-    const externalLink3Name = formData.get('externalLink3Name') as string | null;
-    const externalLink3Url = formData.get('externalLink3Url') as string | null;
-    const collectedAtStr = formData.get('collectedAt') as string;
-    const mediaRecordsData = formData.get('mediaRecordsData') as string;
-
-    if (!title || !content || !genreId) {
-      return { error: '必須項目が不足しています' };
-    }
-
-    const genre = await prisma.genre.findUnique({ where: { id: genreId } });
-    if (!genre) return { error: '無効なジャンルです' };
-
-    // プランB: すでにクライアントでアップロード済みのURLを受け取る
-    const thumbnailUrl = await handleFileUpload(formData);
-    const displayId = await generateDisplayId(genre.code);
-    
-    // 日付の安全な変換
-    let collectedAt = new Date();
-    if (collectedAtStr) {
-      const d = new Date(collectedAtStr);
-      if (!isNaN(d.getTime())) {
-        collectedAt = d;
-      }
-    }
-
-    const mediaRecords = mediaRecordsData ? JSON.parse(mediaRecordsData) : [];
-
-    await prisma.$transaction(async (tx) => {
-      // 成功実績のある update と同じく、分割して確実に保存する
-      await tx.document.create({
-        data: {
-          displayId,
-          title,
-          content,
-          genreId,
-          tags: tags || '',
-          thumbnailUrl: thumbnailUrl || null,
-          externalLinkName: externalLinkName || null,
-          externalLinkUrl: externalLinkUrl || null,
-          externalLink2Name: externalLink2Name || null,
-          externalLink2Url: externalLink2Url || null,
-          externalLink3Name: externalLink3Name || null,
-          externalLink3Url: externalLink3Url || null,
-          collectedAt,
-        },
-      });
-
-      if (mediaRecords.length > 0) {
-        // IDが確定した後にメディアレコードを流し込む
-        const newDoc = await tx.document.findUnique({ where: { displayId } });
-        if (newDoc) {
-          await tx.mediaRecord.createMany({
-            data: mediaRecords.map((m: any, index: number) => ({
-              documentId: newDoc.id,
-              label: m.label,
-              title: m.title || '',
-              description: m.description || '',
-              url: m.url || null,
-              transcript: m.transcript || null,
-              order: m.order ?? index,
-            })),
-          });
-        }
-      }
-    });
-
-    success = true;
-  } catch (e: any) {
-    console.error('Create Error:', e);
-    return { error: e.message || '資料の保存中に予期せぬエラーが発生しました' };
-  }
-
-  if (success) {
-    return { success: true };
-  }
-}
-
-export async function updateDocumentAction(prevState: any, formData: FormData) {
-  let success = false;
-  let displayId: string | undefined;
-
-  try {
-    const id = formData.get('id') as string;
-    const title = formData.get('title') as string;
-    const content = formData.get('content') as string;
-    const tags = formData.get('tags') as string;
-    const externalLinkName = formData.get('externalLinkName') as string | null;
-    const externalLinkUrl = formData.get('externalLinkUrl') as string | null;
-    const externalLink2Name = formData.get('externalLink2Name') as string | null;
-    const externalLink2Url = formData.get('externalLink2Url') as string | null;
-    const externalLink3Name = formData.get('externalLink3Name') as string | null;
-    const externalLink3Url = formData.get('externalLink3Url') as string | null;
-    const collectedAtStr = formData.get('collectedAt') as string;
-    const mediaRecordsData = formData.get('mediaRecordsData') as string;
-
-    if (!id || !title || !content) {
-      return { error: '必須項目が不足しています' };
-    }
-
-    const thumbnailUrl = await handleFileUpload(formData);
-
-    // 日付の安全な変換
-    let collectedAt = new Date();
-    if (collectedAtStr) {
-      const d = new Date(collectedAtStr);
-      if (!isNaN(d.getTime())) {
-        collectedAt = d;
-      }
-    }
-
-    const mediaRecords = mediaRecordsData ? JSON.parse(mediaRecordsData) : [];
-
-    await prisma.$transaction(async (tx) => {
-      // Update document
-      const doc = await tx.document.update({
-        where: { id },
-        data: {
-          title,
-          content,
-          tags: tags || '',
-          thumbnailUrl: thumbnailUrl || null,
-          externalLinkName: externalLinkName || null,
-          externalLinkUrl: externalLinkUrl || null,
-          externalLink2Name: externalLink2Name || null,
-          externalLink2Url: externalLink2Url || null,
-          externalLink3Name: externalLink3Name || null,
-          externalLink3Url: externalLink3Url || null,
-          collectedAt,
-        },
-      });
-      displayId = doc.displayId;
-
-      // Simple strategy: delete all existing media records and recreate them
-      await tx.mediaRecord.deleteMany({
-        where: { documentId: id },
-      });
-
-      if (mediaRecords.length > 0) {
-        await tx.mediaRecord.createMany({
-          data: mediaRecords.map((m: any, index: number) => ({
-            documentId: id,
-            label: m.label,
-            title: m.title || '',
-            description: m.description || '',
-            url: m.url || null,
-            transcript: m.transcript || null,
-            order: m.order ?? index,
-          })),
-        });
-      }
-    });
-
-    success = true;
-  } catch (e: any) {
-    console.error('Update Error:', e);
-    return { error: e.message || '資料の更新中に予期せぬエラーが発生しました' };
-  }
-
-  if (success) {
-    return { success: true, displayId };
-  }
-}
-
+// 資料の削除（Storage の画像も合わせて削除）
 export async function deleteDocument(id: string) {
   const doc = await prisma.document.findUnique({ where: { id } });
-  
+
   if (doc?.thumbnailUrl) {
     try {
-      // 公開 URL からファイル名のみを抽出 (例: https://.../uploads/filename.jpg -> filename.jpg)
+      // 公開 URL からファイル名のみを抽出
       const fileName = doc.thumbnailUrl.split('/').pop();
       if (fileName) {
         await supabase.storage.from('uploads').remove([fileName]);
@@ -296,16 +20,15 @@ export async function deleteDocument(id: string) {
     }
   }
 
-  await prisma.document.delete({
-    where: { id },
-  });
+  await prisma.document.delete({ where: { id } });
 
   revalidatePath('/');
   revalidatePath('/sena-auth/dashboard');
-  
+
   return { success: true };
 }
 
+// 資料一覧取得
 export async function getDocuments(filters?: { q?: string; genreId?: string; tag?: string }) {
   const where: any = {};
 
@@ -332,14 +55,15 @@ export async function getDocuments(filters?: { q?: string; genreId?: string; tag
   });
 }
 
+// displayId による資料取得
 export async function getDocumentByDisplayId(displayId: string) {
   return await prisma.document.findUnique({
     where: { displayId },
-    include: { 
+    include: {
       genre: true,
       mediaRecords: {
-        orderBy: { order: 'asc' }
-      }
+        orderBy: { order: 'asc' },
+      },
     },
   });
 }
