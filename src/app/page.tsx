@@ -29,6 +29,8 @@ export default async function Home({
     getGenres()
   ]);
 
+  const originDoc = documents.find(d => d.displayId === 'DOC134-000');
+
   return (
     <div className="text-[#2e2a24] p-4 md:p-8 flex flex-col pt-12 md:pt-24 max-w-[1400px] mx-auto w-full">
       {/* SECTION 01: HER0 & SUMMARY */}
@@ -142,7 +144,16 @@ export default async function Home({
               >
                 <div className="flex flex-col md:flex-row gap-8 items-center md:items-start w-full">
                   <div className="w-full md:w-1/3 aspect-[16/9] border border-[#bbb4a4] group-hover:border-[#5a5248] bg-black flex items-center justify-center relative overflow-hidden">
-                    <span className="text-white font-serif tracking-[0.3em] font-light z-10 text-xl">て ん げ ん</span>
+                    {originDoc?.thumbnailUrl ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img 
+                        src={originDoc.thumbnailUrl} 
+                        alt={originDoc.title}
+                        className="w-full h-full object-cover filter grayscale-[30%] contrast-110 group-hover:scale-110 transition-transform duration-700"
+                      />
+                    ) : (
+                      <span className="text-white font-serif tracking-[0.3em] font-light z-10 text-xl">て ん げ ん</span>
+                    )}
                     {/* 微小なノイズ的背景 */}
                     <div className="absolute inset-0 bg-white/5 opacity-50 bg-[radial-gradient(circle_at_center,_transparent_0,_rgba(0,0,0,0.8)_100%)] mix-blend-overlay pointer-events-none"></div>
                   </div>
