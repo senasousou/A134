@@ -13,30 +13,41 @@ async function handleFileUpload(formData: FormData): Promise<string | undefined>
     return formData.get('existingThumbnailUrl') as string | undefined;
   }
 
+  // Vercel の 4.5MB 制限を考慮し、4MB を上限とする
+  const MAX_SIZE = 4 * 1024 * 1024;
+  if (file.size > MAX_SIZE) {
+    throw new Error('画像サイズが大きすぎます (4MB以下にしてください)');
+  }
+
   // ファイル名から非ASCII文字や記号を安全なものに置換
   const ext = path.extname(file.name);
   const baseName = path.basename(file.name, ext).replace(/[^a-zA-Z0-9_\-]/g, '');
   const fileName = `${Date.now()}-${baseName}${ext}`;
 
-  // Supabase Storage にアップロード
-  const { data, error } = await supabase.storage
-    .from('uploads')
-    .upload(fileName, file, {
-      cacheControl: '3600',
-      upsert: false
-    });
+  try {
+    // Supabase Storage にアップロード
+    const { data, error } = await supabase.storage
+      .from('uploads')
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
 
-  if (error) {
-    console.error('Supabase Storage Error:', error);
-    throw new Error(`画像の保存に失敗しました: ${error.message}`);
+    if (error) {
+      console.error('Supabase Storage Error:', error);
+      throw new Error(`画像の保存に失敗しました: ${error.message}`);
+    }
+
+    // 公開URLを取得
+    const { data: publicData } = supabase.storage
+      .from('uploads')
+      .getPublicUrl(fileName);
+
+    return publicData.publicUrl;
+  } catch (err: any) {
+    console.error('File Upload Exception:', err);
+    throw err;
   }
-
-  // 公開URLを取得
-  const { data: { publicUrl } } = supabase.storage
-    .from('uploads')
-    .getPublicUrl(fileName);
-
-  return publicUrl;
 }
 
 export async function createDocumentAction(prevState: any, formData: FormData) {
