@@ -4,6 +4,18 @@ import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import SiteFooter from '@/components/SiteFooter';
 
+// 改行や空行を保持するためのユーティリティ
+function processMarkdownContent(text: string | null | undefined) {
+  if (!text) return '';
+  // スペースのみの行を空行に正規化
+  const normalized = text.replace(/^[ \t]+$/gm, '');
+  // 3つ以上の連続する改行（＝1つ以上の空行）を非表示のパラグラフ(\u00A0)に置換
+  return normalized.replace(/\n{3,}/g, (match) => {
+    const emptyLines = match.length - 2;
+    return '\n\n' + Array(emptyLines).fill('\u00A0').join('\n\n') + '\n\n';
+  });
+}
+
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
@@ -74,7 +86,7 @@ function DocumentZero({ doc }: { doc: any }) {
             </header>
 
             <div className="prose prose-stone prose-lg max-w-none text-[#2e2a24] font-serif leading-[2.5] tracking-widest space-y-12 whitespace-pre-wrap">
-              <ReactMarkdown>{doc.content}</ReactMarkdown>
+              <ReactMarkdown>{processMarkdownContent(doc.content)}</ReactMarkdown>
             </div>
           </div>
 
@@ -216,13 +228,13 @@ export default async function DocumentDetailPage({
             </div>
           )}
 
-          <div className="prose prose-stone prose-lg max-w-none text-[#2e2a24] font-serif leading-[2.2] tracking-wide
+          <div className="prose prose-stone prose-lg max-w-none text-[#2e2a24] font-serif leading-[2.2] tracking-wide whitespace-pre-wrap
             prose-headings:font-normal prose-headings:tracking-widest prose-headings:border-b prose-headings:border-[#bbb4a4] prose-headings:pb-2
             prose-a:text-[#2e2a24] prose-a:underline-offset-4 prose-a:decoration-[#bbb4a4] hover:prose-a:decoration-[#2e2a24]
             prose-blockquote:border-l border-[#bbb4a4] prose-blockquote:bg-[#f0ecdf]/50 prose-blockquote:px-6 prose-blockquote:py-4 prose-blockquote:font-style-normal prose-blockquote:text-sm prose-blockquote:leading-loose
             prose-hr:border-[#bbb4a4] prose-p:mb-8"
           >
-            <ReactMarkdown>{doc.content}</ReactMarkdown>
+            <ReactMarkdown>{processMarkdownContent(doc.content)}</ReactMarkdown>
           </div>
 
           {/* メディア記録セクション (一般資料用) */}
