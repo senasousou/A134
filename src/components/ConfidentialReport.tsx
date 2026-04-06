@@ -34,10 +34,10 @@ export const ConfidentialReport: React.FC<ConfidentialReportProps> = ({
       {/* Institutional Header (1961 Styled) */}
       <div className="flex justify-between items-start mb-12 relative z-10">
         <div className="relative w-8 h-8 grayscale contrast-125">
-           <Image src="/logos/logomark.png" alt="Archive134 Mark" fill className="object-contain" />
+           <Image src="/logos/logomark.png" alt="ARCHIVE134 Mark" fill className="object-contain" />
         </div>
         <div className="text-sm font-bold uppercase tracking-[0.2em] text-stone-800">
-          Archive134
+          ARCHIVE134
         </div>
       </div>
 
@@ -81,7 +81,7 @@ export const ConfidentialReport: React.FC<ConfidentialReportProps> = ({
 
       {/* Footer Text */}
       <div className="absolute bottom-12 left-0 right-0 text-center text-[10px] text-stone-400 uppercase tracking-[0.3em] font-sans">
-        Property of Archive134 | Unauthorized disclosure is subject to immediate disciplinary and legal action
+        Property of ARCHIVE134 | Unauthorized disclosure is subject to immediate disciplinary and legal action
       </div>
       
       {/* Page Numbering */}

@@ -8,8 +8,8 @@ import SiteFooter from '@/components/SiteFooter';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Archive134',
-  description: 'Archive134 // Curated by S.Sena - 異常調査アーカイブ',
+  title: 'ARCHIVE134',
+  description: 'ARCHIVE134 // Curated by S.Sena - 異常調査アーカイブ',
 };
 
 export default async function Home({
@@ -55,7 +55,7 @@ export default async function Home({
             </h2>
             <div className="flex flex-col">
               <span className="font-mono text-sm tracking-[0.3em] opacity-80 mb-12">
-                Archive134 // TENGEN
+                ARCHIVE134 // TENGEN
               </span>
             </div>
 

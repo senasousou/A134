@@ -48,7 +48,7 @@ export default async function AboutPage() {
         ))}
 
         <RestrictedLog>
-          SYSTEM STATUS: STABLE // ALL DATA FRAGMENTS SYNCED WITH ARCHIVE 134 CORE.
+          SYSTEM STATUS: STABLE // ALL DATA FRAGMENTS SYNCED WITH ARCHIVE134 CORE.
         </RestrictedLog>
       </main>
 

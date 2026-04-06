@@ -6,7 +6,7 @@
       <img src="public/logos/logomark.png" alt="Logomark" style="height: 30px; filter: grayscale(100%);">
     </div>
     <div style="font-family: sans-serif; font-size: 14px; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase;">
-      Archive134
+      ARCHIVE134
     </div>
   </div>
 
@@ -68,8 +68,8 @@
   </div>
 
   <!-- Footer -->
-  <div style="margin-top: 50px; border-top: 1px solid #999; padding-top: 10px; font-size: 12px; color: #666; text-align: center;">
-    FOR OFFICIAL USE ONLY (FOUO) | INTERNAL SECTOR ALPHA-7 | PROPERTY OF ARCHIVE 134
+  <div style="position: absolute; bottom: 30px; left: 0; width: 100%; text-align: center; font-family: monospace; font-size: 10px; color: #78716c; letter-spacing: 2px;">
+    FOR OFFICIAL USE ONLY (FOUO) | INTERNAL SECTOR ALPHA-7 | PROPERTY OF ARCHIVE134
   </div>
 
 </div>

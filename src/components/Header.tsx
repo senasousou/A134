@@ -79,7 +79,7 @@ const MobileMenu = ({
             opacity: isMenuOpen ? 1 : 0
           }}
         >
-          Archive134
+          ARCHIVE134
         </div>
       </div>
     </div>
@@ -131,7 +131,7 @@ export default function Header() {
                 />
               </h1>
               <span className="font-mono text-[8px] md:text-[10px] tracking-widest uppercase mt-0.5 text-[#5a5248]">
-                Archive134
+                ARCHIVE134
               </span>
             </div>
           </Link>
@@ -167,7 +167,7 @@ export default function Header() {
               />
             </h1>
             <span className="font-mono text-[8px] md:text-[10px] tracking-widest uppercase mt-0.5 text-[#5a5248]">
-              Archive134
+              ARCHIVE134
             </span>
           </div>
         </Link>
