@@ -180,7 +180,7 @@ export default async function Home({
         {/* カードレイアウトのグリッド */}
         {documents.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {documents.filter(d => d.displayId !== 'DOC134-000').map((doc) => (
+            {documents.filter(d => d.displayId !== 'DOC134-000').sort(() => Math.random() - 0.5).map((doc) => (
               <Link 
                 key={doc.id} 
                 href={`/document/${doc.displayId}`}
