@@ -6,7 +6,7 @@
       <img src="public/logos/logomark.png" alt="Logomark" style="height: 30px; filter: grayscale(100%);">
     </div>
     <div style="font-family: sans-serif; font-size: 14px; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase;">
-      Archive 134
+      Archive134
     </div>
   </div>
 

@@ -8,8 +8,8 @@ import SiteFooter from '@/components/SiteFooter';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: '記録資料一三四号',
-  description: 'Archive 134 // Curated by S.Sena - 異常調査アーカイブ',
+  title: 'Archive134',
+  description: 'Archive134 // Curated by S.Sena - 異常調査アーカイブ',
 };
 
 export default async function Home({
@@ -53,9 +53,11 @@ export default async function Home({
                 className="h-[52px] sm:h-[78px] md:h-[90px] lg:h-[104px] w-auto object-contain brightness-0" 
               />
             </h2>
-            <h3 className="text-xl md:text-2xl font-serif text-[#5a5248] tracking-[0.4em] mb-12 font-light uppercase">
-              Archive 134 // TENGEN
-            </h3>
+            <div className="flex flex-col">
+              <span className="font-mono text-sm tracking-[0.3em] opacity-80 mb-12">
+                Archive134 // TENGEN
+              </span>
+            </div>
 
             <p className="text-base md:text-lg leading-[2.2] tracking-wider font-serif mb-16 text-[#2e2a24] max-w-2xl">
               本アーカイブは、管理番号 A134 を発端とする一連の断片的記録（通称『てんげん』）をデジタル集積・保存したものである。定義困難な事態、音響、図象の変遷を永続的に記録・保存・開示することを主目的とする。
