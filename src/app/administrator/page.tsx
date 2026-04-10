@@ -51,7 +51,7 @@ export default async function AdministratorListPage() {
             
             <div className="space-y-6">
               <p className="font-serif text-sm md:text-base leading-[2.2] tracking-wider text-[#2e2a24]">
-                1980年6月2日22時58分、宮崎県都城市生。双子座。A型。<br />
+                1980年6月2日22時58分、宮崎県都城市生。<br />
                 フリーランスデザイナー。<br />
                 十代に置いてきたモノを再び立ち上らせる為に、手に入れた資料群を「作品」という新たな姿に依って開示している。
               </p>
