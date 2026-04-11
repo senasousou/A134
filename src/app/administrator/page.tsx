@@ -90,7 +90,7 @@ export default async function AdministratorListPage() {
                   <ObservationBadge className="text-[#a8a29e] group-hover:text-[#1c1917] transition-colors scale-90 origin-left">
                     {note.date.replace(/-/g, '.')}
                   </ObservationBadge>
-                  <span className="font-mono text-[8px] bg-[#f5ebd5] text-[#5a5248] px-1.5 py-0.5 tracking-tighter border border-[#bbb4a4]/40">
+                  <span className="font-mono text-[8px] bg-[#F5E9C4] text-[#5a5248] px-1.5 py-0.5 tracking-tighter border border-[#bbb4a4]/40">
                     {note.confidentialLevel}
                   </span>
                 </div>

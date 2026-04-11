@@ -84,7 +84,7 @@ export default async function Home({
             <div className="mt-12">
               <a 
                 href="#section-02"
-                className="inline-block bg-[#2e2a24] text-[#f4efe4] px-10 py-4 text-sm font-bold tracking-widest font-serif hover:bg-black transition-colors"
+                className="inline-block bg-[#2e2a24] text-[#FFF8E7] px-10 py-4 text-sm font-bold tracking-widest font-serif hover:bg-black transition-colors"
               >
                 収蔵資料一覧
               </a>
@@ -93,7 +93,7 @@ export default async function Home({
 
           {/* 右側: SUMMARY ボックス */}
           <div className="lg:col-span-5 w-full">
-            <div className="border border-[#bbb4a4] bg-[#f9f7f1] shadow-sm">
+            <div className="border border-[#bbb4a4] bg-[#FFF3D0] shadow-sm">
               <div className="border-b border-[#bbb4a4] px-8 py-5 flex justify-between items-end">
                 <h4 className="font-serif font-bold tracking-widest text-[#5a5248]">資料概要</h4>
                 <span className="font-mono text-[10px] tracking-widest text-[#5a5248] uppercase">Summary</span>
@@ -147,7 +147,7 @@ export default async function Home({
           <div className="mb-12">
              <Link 
                 href={`/document/DOC134-000`}
-                className="group flex flex-col md:flex-row border border-[#2e2a24] hover:bg-[#2e2a24] hover:text-[#f4efe4] bg-[#FFF8E7] overflow-hidden transition-all duration-300 items-center justify-between p-8"
+                className="group flex flex-col md:flex-row border border-[#2e2a24] hover:bg-[#2e2a24] hover:text-[#FFF8E7] bg-[#FFF8E7] overflow-hidden transition-all duration-300 items-center justify-between p-8"
               >
                 <div className="flex flex-col md:flex-row gap-8 items-center md:items-start w-full">
                   <div className="w-full md:w-1/3 aspect-[16/9] border border-[#bbb4a4] group-hover:border-[#5a5248] bg-black flex items-center justify-center relative overflow-hidden">
@@ -166,7 +166,7 @@ export default async function Home({
                   </div>
                   <div className="w-full md:w-2/3 flex flex-col pt-2">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="border border-[#2e2a24] group-hover:border-[#f4efe4] px-2 py-0.5 text-[10px] font-mono tracking-widest">ORIGIN</span>
+                      <span className="border border-[#2e2a24] group-hover:border-[#FFF8E7] px-2 py-0.5 text-[10px] font-mono tracking-widest">ORIGIN</span>
                       <span className="font-mono text-sm tracking-widest font-bold">DOC134-000-ORIGIN</span>
                     </div>
                     <h3 className="font-serif text-3xl font-bold leading-snug mb-4 tracking-widest">
@@ -220,7 +220,7 @@ export default async function Home({
                   {doc.tags && (
                     <div className="mb-4 flex flex-wrap gap-1">
                       {doc.tags.split(/[,、]/).filter(t => t.trim()).slice(0, 3).map((t, idx) => (
-                        <span key={idx} className="text-[10px] tracking-widest px-1 py-0.5 bg-[#f0ecdf] text-[#5a5248]">
+                        <span key={idx} className="text-[10px] tracking-widest px-1 py-0.5 bg-[#F5E8BB] text-[#5a5248]">
                           {t.trim()}
                         </span>
                       ))}
@@ -237,7 +237,7 @@ export default async function Home({
             ))}
           </div>
         ) : (
-          <div className="border border-[#bbb4a4] p-16 flex flex-col items-center justify-center text-[#5a5248] font-serif tracking-widest bg-[#f9f7f1]">
+          <div className="border border-[#bbb4a4] p-16 flex flex-col items-center justify-center text-[#5a5248] font-serif tracking-widest bg-[#FFF3D0]">
             <span className="text-4xl mb-6 font-mono">∅</span>
             <p className="text-lg">指定された条件に合致する記録は存在しない。</p>
             {(q || genreId || tag) && (

@@ -29,7 +29,7 @@ export default async function AboutPage() {
         </p>
       </header>
 
-      <main className="prose prose-stone prose-lg max-w-none prose-p:leading-loose prose-p:tracking-wider prose-h2:tracking-widest prose-h2:border-b prose-h2:border-[#e7e0cd] prose-h2:pb-2">
+      <main className="prose prose-stone prose-lg max-w-none prose-p:leading-loose prose-p:tracking-wider prose-h2:tracking-widest prose-h2:border-b prose-h2:border-[#DDD0A8] prose-h2:pb-2">
         {worldData.sections.map((section: any) => (
           <section key={section.id} className="mb-20 relative group">
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
@@ -40,7 +40,7 @@ export default async function AboutPage() {
                 <ObservationBadge className="text-[#a8a29e]">
                   {section.lastUpdated}
                 </ObservationBadge>
-                <span className="font-mono text-[10px] bg-[#2e2a24] text-[#f4efe4] px-2 py-0.5 tracking-tighter">
+                <span className="font-mono text-[10px] bg-[#2e2a24] text-[#FFF8E7] px-2 py-0.5 tracking-tighter">
                   {section.confidentiality}
                 </span>
               </div>

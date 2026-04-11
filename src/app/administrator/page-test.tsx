@@ -43,7 +43,7 @@ export default function AdministratorListPage() {
                   <ObservationBadge className="text-[#a8a29e] group-hover:text-[#1c1917] transition-colors scale-75 origin-left">
                     {note.date.replace(/-/g, '.')}
                   </ObservationBadge>
-                  <span className="font-mono text-[7px] bg-[#f5ebd5] text-[#5a5248] px-1 py-0.5 tracking-tighter border border-[#bbb4a4]/30">
+                  <span className="font-mono text-[7px] bg-[#F5E9C4] text-[#5a5248] px-1 py-0.5 tracking-tighter border border-[#bbb4a4]/30">
                     {note.confidentialLevel}
                   </span>
                 </div>

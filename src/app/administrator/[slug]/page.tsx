@@ -31,7 +31,7 @@ export default async function NoteDetailPage({
           <ObservationBadge className="text-[#a8a29e]">
             {note.date.replace(/-/g, '.')} // {note.slug.toUpperCase()}
           </ObservationBadge>
-          <span className="font-mono text-[10px] bg-[#2e2a24] text-[#f4efe4] px-2 py-0.5 tracking-tighter">
+          <span className="font-mono text-[10px] bg-[#2e2a24] text-[#FFF8E7] px-2 py-0.5 tracking-tighter">
             {note.confidentialLevel}
           </span>
         </div>
@@ -44,7 +44,7 @@ export default async function NoteDetailPage({
         </p>
       </header>
 
-      <main className="prose prose-stone prose-lg max-w-none prose-p:leading-loose prose-p:tracking-wider prose-h2:tracking-widest prose-h2:border-b prose-h2:border-[#e7e0cd] prose-h2:pb-2">
+      <main className="prose prose-stone prose-lg max-w-none prose-p:leading-loose prose-p:tracking-wider prose-h2:tracking-widest prose-h2:border-b prose-h2:border-[#DDD0A8] prose-h2:pb-2">
         <ReactMarkdown>{note.content}</ReactMarkdown>
         
         {/* 自動署名 */}

@@ -285,7 +285,7 @@ export default function DocumentForm({
             />
           </div>
 
-          <div className="p-6 border border-[#bbb4a4] bg-[#f4f1ea] space-y-8">
+          <div className="p-6 border border-[#bbb4a4] bg-[#FAF2D8] space-y-8">
             <div className="flex justify-between items-center border-b border-[#bbb4a4] pb-3">
               <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-[#5a5248]">関連する音声・映像記録</h4>
               <button
@@ -310,7 +310,7 @@ export default function DocumentForm({
                         type="button"
                         onClick={() => moveMediaRecord(index, 'up')}
                         disabled={index === 0}
-                        className="p-1 bg-white border border-[#bbb4a4] hover:bg-[#f0ecdf] disabled:opacity-30"
+                        className="p-1 bg-white border border-[#bbb4a4] hover:bg-[#F5E8BB] disabled:opacity-30"
                       >
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
@@ -320,7 +320,7 @@ export default function DocumentForm({
                         type="button"
                         onClick={() => moveMediaRecord(index, 'down')}
                         disabled={index === mediaRecords.length - 1}
-                        className="p-1 bg-white border border-[#bbb4a4] hover:bg-[#f0ecdf] disabled:opacity-30"
+                        className="p-1 bg-white border border-[#bbb4a4] hover:bg-[#F5E8BB] disabled:opacity-30"
                       >
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

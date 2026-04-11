@@ -26,7 +26,7 @@ export const ConfidentialReport: React.FC<ConfidentialReportProps> = ({
 }) => {
   return (
     <div className="max-w-4xl mx-auto my-10 p-12 bg-[#fdfcf0] border border-[#d1ccb8] shadow-2xl font-mono text-[#1a1a1a] relative overflow-hidden" 
-         style={{ minHeight: '1100px', backgroundImage: 'radial-gradient(#e7e0cd 0.5px, transparent 0.5px)', backgroundSize: '20px 20px' }}>
+         style={{ minHeight: '1100px', backgroundImage: 'radial-gradient(#DDD0A8 0.5px, transparent 0.5px)', backgroundSize: '20px 20px' }}>
       
       {/* Decorative Paper Texture / Aged Feel */}
       <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/pinstriped-suit.png")' }}></div>

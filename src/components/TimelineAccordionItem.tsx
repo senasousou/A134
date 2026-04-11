@@ -34,7 +34,7 @@ export default function TimelineAccordionItem({ event }: { event: EventData }) {
             <span className="text-[9px] font-mono tracking-[0.4em] text-[#8b857a] uppercase font-bold">
               REF-HIST-{event.id.slice(-4).toUpperCase()}
             </span>
-            <span className="text-[10px] font-mono tracking-[0.2em] border border-[#bbb4a4]/40 px-2 py-0.5 text-[#57534e] bg-[#f9f5eb]/50">
+            <span className="text-[10px] font-mono tracking-[0.2em] border border-[#bbb4a4]/40 px-2 py-0.5 text-[#57534e] bg-[#FEF0D5]/50">
               {event.category.name.toUpperCase()}
             </span>
           </div>
@@ -54,7 +54,7 @@ export default function TimelineAccordionItem({ event }: { event: EventData }) {
       {/* Expanded Content Area */}
       <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[2000px] opacity-100 mt-6' : 'max-h-0 opacity-0'}`}>
         <div className="space-y-8">
-          <div className="p-8 border border-[#bbb4a4]/30 bg-[#fefcf8] relative overflow-hidden">
+          <div className="p-8 border border-[#bbb4a4]/30 bg-[#FFFCF0] relative overflow-hidden">
             <div className="absolute top-0 right-0 p-2 font-mono text-[8px] opacity-20 uppercase tracking-tighter">
               Confidential // {event.category.name}
             </div>
@@ -74,7 +74,7 @@ export default function TimelineAccordionItem({ event }: { event: EventData }) {
                   <li key={doc.id}>
                     <Link 
                       href={`/document/${doc.displayId}`}
-                      className="flex items-center gap-4 bg-white/40 hover:bg-[#2e2a24] hover:text-[#f4efe4] p-4 transition-all duration-300 border border-[#bbb4a4]/30 group/link"
+                      className="flex items-center gap-4 bg-white/40 hover:bg-[#2e2a24] hover:text-[#FFF8E7] p-4 transition-all duration-300 border border-[#bbb4a4]/30 group/link"
                     >
                       <div className="flex flex-col min-w-[100px]">
                         <span className="text-[9px] font-mono text-[#8b857a] group-hover/link:text-[#bbb4a4] tracking-widest uppercase mb-0.5">Archive ID</span>

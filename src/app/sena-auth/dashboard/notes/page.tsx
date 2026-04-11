@@ -46,7 +46,7 @@ export default async function NotesManagePage() {
                   {note.title}
                 </td>
                 <td className="py-4 px-4">
-                  <span className="font-mono text-[9px] bg-[#2e2a24] text-[#f4efe4] px-2 py-0.5 tracking-tighter">
+                  <span className="font-mono text-[9px] bg-[#2e2a24] text-[#FFF8E7] px-2 py-0.5 tracking-tighter">
                     {note.confidentialLevel}
                   </span>
                 </td>

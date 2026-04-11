@@ -34,7 +34,7 @@ const MobileMenu = ({
       {/* 閉じるボタン */}
       <button 
         onClick={() => setIsMenuOpen(false)}
-        className="absolute top-6 right-6 font-mono text-[10px] tracking-widest border border-[#bbb4a4] px-4 py-1 text-[#5a5248] hover:bg-[#2e2a24] hover:text-[#f4efe4] transition-all z-[10000]"
+        className="absolute top-6 right-6 font-mono text-[10px] tracking-widest border border-[#bbb4a4] px-4 py-1 text-[#5a5248] hover:bg-[#2e2a24] hover:text-[#FFF8E7] transition-all z-[10000]"
       >
         CLOSE
       </button>
@@ -196,7 +196,7 @@ export default function Header() {
         <div className="md:hidden flex items-center">
           <button 
             onClick={() => setIsMenuOpen(true)}
-            className="font-mono text-[10px] tracking-widest border border-[#bbb4a4] px-4 py-1 text-[#5a5248] hover:bg-[#2e2a24] hover:text-[#f4efe4] transition-all"
+            className="font-mono text-[10px] tracking-widest border border-[#bbb4a4] px-4 py-1 text-[#5a5248] hover:bg-[#2e2a24] hover:text-[#FFF8E7] transition-all"
           >
             MENU
           </button>

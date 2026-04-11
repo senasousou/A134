@@ -5,10 +5,10 @@
     --background: #FFF8E7; /* Cosmic Latte */
     --foreground: #1c1917; /* Dark stone / Ink */
     
-    --muted: #f5ebd5;
+    --muted: #F5E9C4;
     --muted-foreground: #57534e;
     
-    --border: #e7e0cd;
+    --border: #DDD0A8;
   }
 }
 
@@ -30,9 +30,9 @@
 /* Utilities for the Cosmic theme */
 @layer utilities {
   .cosmic-border {
-    @apply border-b border-[#e7e0cd];
+    @apply border-b border-[#DDD0A8];
   }
   .cosmic-link {
-    @apply text-[#57534e] hover:text-[#1c1917] transition-colors underline decoration-[#e7e0cd] underline-offset-4 hover:decoration-[#1c1917];
+    @apply text-[#57534e] hover:text-[#1c1917] transition-colors underline decoration-[#DDD0A8] underline-offset-4 hover:decoration-[#1c1917];
   }
 }

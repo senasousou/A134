@@ -116,7 +116,7 @@ function DocumentZero({ doc }: { doc: any }) {
             </div>
           </div>
 
-          <div className="relative p-10 md:p-16 border border-[#bbb4a4] bg-[#f0ecdf]/30 overflow-hidden">
+          <div className="relative p-10 md:p-16 border border-[#bbb4a4] bg-[#F5E8BB]/30 overflow-hidden">
              <div className="absolute top-4 right-6 font-mono text-[10px] tracking-widest text-[#5a5248] opacity-30 select-none">
               ADMINISTRATOR PRIVATE NOTE // A134-ORIGIN
              </div>
@@ -149,7 +149,7 @@ function DocumentZero({ doc }: { doc: any }) {
                 const ytId = getYouTubeId(record.url);
                 return (
                   <div key={idx} className="flex flex-col gap-4">
-                    <div className="border border-[#bbb4a4] bg-[#f0ecdf] px-4 py-2 w-max">
+                    <div className="border border-[#bbb4a4] bg-[#F5E8BB] px-4 py-2 w-max">
                       <span className="font-mono text-xs tracking-widest text-[#5a5248] font-bold">{record.label} : {record.title}</span>
                     </div>
                     <p className="font-serif text-sm tracking-widest text-[#5a5248] mb-2 leading-relaxed">
@@ -165,14 +165,14 @@ function DocumentZero({ doc }: { doc: any }) {
                           title={record.title}
                         ></iframe>
                       ) : (
-                        <span className="font-mono text-xs tracking-widest text-[#f4efe4] opacity-50 border border-[#f4efe4] px-4 py-2">
+                        <span className="font-mono text-xs tracking-widest text-[#FFF8E7] opacity-50 border border-[#FFF8E7] px-4 py-2">
                           [ NO MEDIA PLAYER AVAILABLE ]
                         </span>
                       )}
                     </div>
                     
                     {record.transcript && (
-                      <div className="mt-4 p-6 bg-[#f0ecdf]/40 border border-dashed border-[#bbb4a4]">
+                      <div className="mt-4 p-6 bg-[#F5E8BB]/40 border border-dashed border-[#bbb4a4]">
                         <p className="font-mono text-[10px] tracking-widest text-[#5a5248] mb-4 uppercase">[ 資料内容 ]</p>
                         <div className="font-serif text-sm md:text-base leading-[2.2] tracking-[0.15em] text-[#2e2a24] whitespace-pre-wrap">
                           {record.transcript}
@@ -221,10 +221,10 @@ export default async function DocumentDetailPage({
       <header className="mb-16 grid grid-cols-1 md:grid-cols-3 gap-8 items-end border-b-2 border-[#2e2a24] pb-8">
         <div className="md:col-span-2 space-y-4">
           <div className="flex gap-2">
-            <span className="font-mono text-[10px] tracking-widest bg-[#f0ecdf] text-[#5a5248] px-3 py-1 border border-[#bbb4a4]">
+            <span className="font-mono text-[10px] tracking-widest bg-[#F5E8BB] text-[#5a5248] px-3 py-1 border border-[#bbb4a4]">
               {doc.genre.code}
             </span>
-            <span className="font-mono text-[10px] tracking-widest bg-[#2e2a24] text-[#f4efe4] px-3 py-1">
+            <span className="font-mono text-[10px] tracking-widest bg-[#2e2a24] text-[#FFF8E7] px-3 py-1">
               {doc.genre.name}
             </span>
           </div>
@@ -244,7 +244,7 @@ export default async function DocumentDetailPage({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
         <main className="lg:col-span-8 mb-16">
           {doc.thumbnailUrl && (
-            <div className="mb-12 border border-[#bbb4a4] p-2 bg-[#f9f7f1]">
+            <div className="mb-12 border border-[#bbb4a4] p-2 bg-[#FFF3D0]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src={doc.thumbnailUrl} 
@@ -257,7 +257,7 @@ export default async function DocumentDetailPage({
           <div className="prose prose-stone prose-lg max-w-none text-[#2e2a24] font-serif leading-[2.2] tracking-wide whitespace-pre-wrap
             prose-headings:font-normal prose-headings:tracking-widest prose-headings:border-b prose-headings:border-[#bbb4a4] prose-headings:pb-2
             prose-a:text-[#2e2a24] prose-a:underline-offset-4 prose-a:decoration-[#bbb4a4] hover:prose-a:decoration-[#2e2a24]
-            prose-blockquote:border-l border-[#bbb4a4] prose-blockquote:bg-[#f0ecdf]/50 prose-blockquote:px-6 prose-blockquote:py-4 prose-blockquote:font-style-normal prose-blockquote:text-sm prose-blockquote:leading-loose
+            prose-blockquote:border-l border-[#bbb4a4] prose-blockquote:bg-[#F5E8BB]/50 prose-blockquote:px-6 prose-blockquote:py-4 prose-blockquote:font-style-normal prose-blockquote:text-sm prose-blockquote:leading-loose
             prose-hr:border-[#bbb4a4] prose-p:mb-8"
           >
             <ReactMarkdown>{processMarkdownContent(doc.content)}</ReactMarkdown>
@@ -275,7 +275,7 @@ export default async function DocumentDetailPage({
                   const ytId = getYouTubeId(record.url);
                   return (
                     <div key={idx} className="flex flex-col gap-4">
-                      <div className="border border-[#bbb4a4] bg-[#f0ecdf] px-4 py-2 w-max">
+                      <div className="border border-[#bbb4a4] bg-[#F5E8BB] px-4 py-2 w-max">
                         <span className="font-mono text-xs tracking-widest text-[#5a5248] font-bold">{record.label} : {record.title}</span>
                       </div>
                       <p className="font-serif text-sm tracking-widest text-[#5a5248] mb-2 leading-relaxed">
@@ -290,13 +290,13 @@ export default async function DocumentDetailPage({
                             title={record.title}
                           ></iframe>
                         ) : (
-                          <span className="font-mono text-xs tracking-widest text-[#f4efe4] opacity-50 border border-[#f4efe4] px-4 py-2">
+                          <span className="font-mono text-xs tracking-widest text-[#FFF8E7] opacity-50 border border-[#FFF8E7] px-4 py-2">
                             [ NO MEDIA PLAYER AVAILABLE ]
                           </span>
                         )}
                       </div>
                       {record.transcript && (
-                        <div className="mt-4 p-6 bg-[#f0ecdf]/40 border border-dashed border-[#bbb4a4]">
+                        <div className="mt-4 p-6 bg-[#F5E8BB]/40 border border-dashed border-[#bbb4a4]">
                           <p className="font-mono text-[10px] tracking-widest text-[#5a5248] mb-4 uppercase">[ 資料内容 ]</p>
                           <div className="font-serif text-sm md:text-base leading-[2.2] tracking-[0.15em] text-[#2e2a24] whitespace-pre-wrap">
                             {record.transcript}
@@ -317,7 +317,7 @@ export default async function DocumentDetailPage({
                   href={doc.externalLinkUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="inline-block border border-[#2e2a24] text-[#2e2a24] hover:bg-[#2e2a24] hover:text-[#f4efe4] px-8 py-4 font-serif text-sm tracking-[0.2em] transition-colors min-w-[200px] text-center"
+                  className="inline-block border border-[#2e2a24] text-[#2e2a24] hover:bg-[#2e2a24] hover:text-[#FFF8E7] px-8 py-4 font-serif text-sm tracking-[0.2em] transition-colors min-w-[200px] text-center"
                 >
                   {doc.externalLinkName}
                 </a>
@@ -327,7 +327,7 @@ export default async function DocumentDetailPage({
                   href={(doc as any).externalLink2Url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="inline-block border border-[#2e2a24] text-[#2e2a24] hover:bg-[#2e2a24] hover:text-[#f4efe4] px-8 py-4 font-serif text-sm tracking-[0.2em] transition-colors min-w-[200px] text-center"
+                  className="inline-block border border-[#2e2a24] text-[#2e2a24] hover:bg-[#2e2a24] hover:text-[#FFF8E7] px-8 py-4 font-serif text-sm tracking-[0.2em] transition-colors min-w-[200px] text-center"
                 >
                   {(doc as any).externalLink2Name}
                 </a>
@@ -337,7 +337,7 @@ export default async function DocumentDetailPage({
                   href={(doc as any).externalLink3Url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="inline-block border border-[#2e2a24] text-[#2e2a24] hover:bg-[#2e2a24] hover:text-[#f4efe4] px-8 py-4 font-serif text-sm tracking-[0.2em] transition-colors min-w-[200px] text-center"
+                  className="inline-block border border-[#2e2a24] text-[#2e2a24] hover:bg-[#2e2a24] hover:text-[#FFF8E7] px-8 py-4 font-serif text-sm tracking-[0.2em] transition-colors min-w-[200px] text-center"
                 >
                   {(doc as any).externalLink3Name}
                 </a>
@@ -347,7 +347,7 @@ export default async function DocumentDetailPage({
         </main>
 
         <aside className="lg:col-span-4 w-full">
-          <div className="border border-[#bbb4a4] bg-[#f9f7f1] p-6 sticky top-20 lg:top-28">
+          <div className="border border-[#bbb4a4] bg-[#FFF3D0] p-6 sticky top-20 lg:top-28">
             <h3 className="font-serif font-bold tracking-widest text-[#5a5248] border-b border-[#bbb4a4] pb-2 mb-6 text-sm">
               資料プロパティ
             </h3>
@@ -383,7 +383,7 @@ export default async function DocumentDetailPage({
                         <Link 
                           key={i} 
                           href={`/?tag=${encodeURIComponent(cleanTag)}`}
-                          className="text-[10px] tracking-widest px-2 py-1 border border-[#bbb4a4] text-[#5a5248] hover:bg-[#2e2a24] hover:text-[#f4efe4] transition-colors"
+                          className="text-[10px] tracking-widest px-2 py-1 border border-[#bbb4a4] text-[#5a5248] hover:bg-[#2e2a24] hover:text-[#FFF8E7] transition-colors"
                         >
                           #{cleanTag}
                         </Link>

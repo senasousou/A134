@@ -46,7 +46,7 @@ export function AdministratorNote({
   signature?: boolean
 }) {
   return (
-    <div className={`my-12 p-6 md:p-8 border border-dashed border-[#bbb4a4] bg-[#f5ebd5]/10 relative group ${className}`}>
+    <div className={`my-12 p-6 md:p-8 border border-dashed border-[#bbb4a4] bg-[#F5E9C4]/10 relative group ${className}`}>
       <div className="absolute -top-3 left-6 bg-[#FFF8E7] px-3 py-0.5 text-[10px] font-mono tracking-widest text-[#5a5248] uppercase">
         Admin Note
       </div>

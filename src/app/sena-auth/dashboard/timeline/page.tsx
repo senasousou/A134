@@ -66,7 +66,7 @@ export default async function TimelineDashboard() {
         </div>
 
         {/* 右: カテゴリ管理 */}
-        <div className="md:col-span-1 border border-[var(--border)] p-4 bg-[#f5ebd5]/20">
+        <div className="md:col-span-1 border border-[var(--border)] p-4 bg-[#F5E9C4]/20">
           <h3 className="text-sm font-bold border-b-[2px] border-[var(--foreground)] pb-2 mb-4 tracking-widest">種類(カテゴリ)管理</h3>
           <TimelineCategoryForm />
           
