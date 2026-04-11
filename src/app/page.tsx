@@ -147,7 +147,7 @@ export default async function Home({
           <div className="mb-12">
              <Link 
                 href={`/document/DOC134-000`}
-                className="group flex flex-col md:flex-row border border-[#2e2a24] hover:bg-[#2e2a24] hover:text-[#f4efe4] bg-[#f4efe4] overflow-hidden transition-all duration-300 items-center justify-between p-8"
+                className="group flex flex-col md:flex-row border border-[#2e2a24] hover:bg-[#2e2a24] hover:text-[#f4efe4] bg-[#FFF8E7] overflow-hidden transition-all duration-300 items-center justify-between p-8"
               >
                 <div className="flex flex-col md:flex-row gap-8 items-center md:items-start w-full">
                   <div className="w-full md:w-1/3 aspect-[16/9] border border-[#bbb4a4] group-hover:border-[#5a5248] bg-black flex items-center justify-center relative overflow-hidden">

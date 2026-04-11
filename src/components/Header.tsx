@@ -148,7 +148,7 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[#bbb4a4]/30 bg-[#f4efe4]/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-[#bbb4a4]/30 bg-[#FFF8E7]/80 backdrop-blur-md">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-4 md:py-6 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-4 md:gap-5 hover:opacity-80 transition-opacity">
           {/* eslint-disable-next-line @next/next/no-img-element */}

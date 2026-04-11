@@ -42,10 +42,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#f4efe4]">
+      <body className="min-h-full flex flex-col bg-[#FFF8E7]">
         <Header />
         <main className="flex-1">{children}</main>
-        <footer className="py-12 border-t border-[#bbb4a4]/20 text-center bg-[#f4efe4]">
+        <footer className="py-12 border-t border-[#bbb4a4]/20 text-center bg-[#FFF8E7]">
           <p className="font-mono text-[10px] tracking-[0.4em] text-[#8b857a] uppercase opacity-60">
             ©️2026 SENA SOUSOU / ARCHIVE134 / TENGEN
           </p>

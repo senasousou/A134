@@ -20,7 +20,7 @@ export default function TimelineAccordionItem({ event }: { event: EventData }) {
       {/* Node Marker - Interactive circle with connecting line */}
       {/* Adjusted top position to align with the center of the displayYear h3 */}
       <div className="absolute -left-[6px] top-[80px] flex items-center transition-all duration-300">
-        <div className="w-3 h-3 rounded-full border-2 border-[#2e2a24] bg-[#f4efe4] group-hover:bg-[#2e2a24] transition-colors duration-300" />
+        <div className="w-3 h-3 rounded-full border-2 border-[#2e2a24] bg-[#FFF8E7] group-hover:bg-[#2e2a24] transition-colors duration-300" />
         <div className="w-4 h-[1px] bg-[#bbb4a4]/50" />
       </div>
       
