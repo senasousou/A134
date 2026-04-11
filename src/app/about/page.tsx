@@ -11,6 +11,7 @@ export const metadata = {
   openGraph: {
     title: '世界概要 | 記録資料一三四号・てんげん',
     description: '創作叙事詩「てんげん」の世界観・設定・理（ことわり）の解説。',
+    images: ['/og-default.jpg'],
   },
 };
 

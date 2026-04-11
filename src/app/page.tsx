@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '記録資料一三四号・てんげん',
     description: 'ARCHIVE134 // 創作叙事詩「てんげん」に関連する記録資料の保管庫',
+    images: ['/og-default.jpg'],
   },
 };
 
