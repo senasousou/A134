@@ -347,7 +347,7 @@ export default async function DocumentDetailPage({
         </main>
 
         <aside className="lg:col-span-4 w-full">
-          <div className="border border-[#bbb4a4] bg-[#f9f7f1] p-6 sticky top-8">
+          <div className="border border-[#bbb4a4] bg-[#f9f7f1] p-6 sticky top-20 lg:top-28">
             <h3 className="font-serif font-bold tracking-widest text-[#5a5248] border-b border-[#bbb4a4] pb-2 mb-6 text-sm">
               資料プロパティ
             </h3>
