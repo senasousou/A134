@@ -93,7 +93,7 @@ export default async function Home({
 
           {/* 右側: SUMMARY ボックス */}
           <div className="lg:col-span-5 w-full">
-            <div className="border border-[#bbb4a4] bg-[#FFF3D0] shadow-sm">
+            <div className="border border-[#bbb4a4] bg-[#FFFCF3] shadow-sm">
               <div className="border-b border-[#bbb4a4] px-8 py-5 flex justify-between items-end">
                 <h4 className="font-serif font-bold tracking-widest text-[#5a5248]">資料概要</h4>
                 <span className="font-mono text-[10px] tracking-widest text-[#5a5248] uppercase">Summary</span>
@@ -220,7 +220,7 @@ export default async function Home({
                   {doc.tags && (
                     <div className="mb-4 flex flex-wrap gap-1">
                       {doc.tags.split(/[,、]/).filter(t => t.trim()).slice(0, 3).map((t, idx) => (
-                        <span key={idx} className="text-[10px] tracking-widest px-1 py-0.5 bg-[#F5E8BB] text-[#5a5248]">
+                        <span key={idx} className="text-[10px] tracking-widest px-1 py-0.5 bg-[#FFF5E5] text-[#5a5248]">
                           {t.trim()}
                         </span>
                       ))}
@@ -237,7 +237,7 @@ export default async function Home({
             ))}
           </div>
         ) : (
-          <div className="border border-[#bbb4a4] p-16 flex flex-col items-center justify-center text-[#5a5248] font-serif tracking-widest bg-[#FFF3D0]">
+          <div className="border border-[#bbb4a4] p-16 flex flex-col items-center justify-center text-[#5a5248] font-serif tracking-widest bg-[#FFFCF3]">
             <span className="text-4xl mb-6 font-mono">∅</span>
             <p className="text-lg">指定された条件に合致する記録は存在しない。</p>
             {(q || genreId || tag) && (

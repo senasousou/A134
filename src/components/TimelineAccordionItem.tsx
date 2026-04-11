@@ -34,7 +34,7 @@ export default function TimelineAccordionItem({ event }: { event: EventData }) {
             <span className="text-[9px] font-mono tracking-[0.4em] text-[#8b857a] uppercase font-bold">
               REF-HIST-{event.id.slice(-4).toUpperCase()}
             </span>
-            <span className="text-[10px] font-mono tracking-[0.2em] border border-[#bbb4a4]/40 px-2 py-0.5 text-[#57534e] bg-[#FEF0D5]/50">
+            <span className="text-[10px] font-mono tracking-[0.2em] border border-[#bbb4a4]/40 px-2 py-0.5 text-[#57534e] bg-[#FFF4EA]/50">
               {event.category.name.toUpperCase()}
             </span>
           </div>
