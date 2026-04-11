@@ -4,8 +4,12 @@ import TimelineAccordionItem from '@/components/TimelineAccordionItem';
 import Link from 'next/link';
 
 export const metadata = {
-  title: '歴史年表 - 記録資料一三四号',
-  description: 'Project Tengen Archive // Chronological Timeline of Events',
+  title: '歴史年表',
+  description: '創作叙事詩「てんげん」に関連する出来事の歴史年表。',
+  openGraph: {
+    title: '歴史年表 | 記録資料一三四号・てんげん',
+    description: '創作叙事詩「てんげん」に関連する出来事の歴史年表。',
+  },
 };
 
 export default async function TimelinePage() {

@@ -25,11 +25,37 @@ export async function generateMetadata({
 }) {
   const { displayId } = await params;
   if (displayId === 'DOC134-000') {
-    return { title: 'DOC134-000-ORIGIN - 記録資料一三四号' };
+    return {
+      title: 'DOC134-000-ORIGIN — てんげん起源',
+      openGraph: {
+        title: 'DOC134-000-ORIGIN — てんげん起源',
+        description: '管理番号 A134 を発端とする一連の断片的記録。すべては はるか太古のふたりから。',
+        images: ['/og-default.jpg'],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        images: ['/og-default.jpg'],
+      },
+    };
   }
   const doc = await getDocumentByDisplayId(displayId);
+  if (!doc) {
+    return { title: '文書が見つかりません' };
+  }
+  const ogImage = doc.thumbnailUrl ? [doc.thumbnailUrl] : ['/og-default.jpg'];
+  const description = doc.content?.replace(/\n/g, ' ').slice(0, 120);
   return {
-    title: doc ? `${doc.displayId} - 記録資料一三四号` : '文書が見つかりません',
+    title: `${doc.displayId} ${doc.title}`,
+    description,
+    openGraph: {
+      title: `${doc.displayId} ${doc.title}`,
+      description,
+      images: ogImage,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      images: ogImage,
+    },
   };
 }
 

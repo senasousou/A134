@@ -14,8 +14,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "記録資料一三四号 - TENGEN ARCHIVE",
-  description: "創作叙事詩「てんげん」に関連する記録資料の保管庫",
+  metadataBase: new URL('https://senasousou.com'),
+  title: {
+    default: '記録資料一三四号・てんげん',
+    template: '%s | 記録資料一三四号・てんげん',
+  },
+  description: '創作叙事詩「てんげん」に関連する記録資料の保管庫',
+  openGraph: {
+    type: 'website',
+    siteName: '記録資料一三四号・てんげん',
+    description: '創作叙事詩「てんげん」に関連する記録資料の保管庫',
+    images: ['/og-default.jpg'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/og-default.jpg'],
+  },
 };
 
 export default function RootLayout({

@@ -8,8 +8,11 @@ import SiteFooter from '@/components/SiteFooter';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'ARCHIVE134',
-  description: 'ARCHIVE134 // Curated by S.Sena - 異常調査アーカイブ',
+  description: 'ARCHIVE134 // 創作叙事詩「てんげん」に関連する記録資料の保管庫',
+  openGraph: {
+    title: '記録資料一三四号・てんげん',
+    description: 'ARCHIVE134 // 創作叙事詩「てんげん」に関連する記録資料の保管庫',
+  },
 };
 
 export default async function Home({

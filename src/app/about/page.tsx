@@ -6,8 +6,12 @@ import SiteFooter from '@/components/SiteFooter';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: '世界概要 - 記録資料一三四号',
+  title: '世界概要',
   description: '創作叙事詩「てんげん」の世界観・設定・理（ことわり）の解説。',
+  openGraph: {
+    title: '世界概要 | 記録資料一三四号・てんげん',
+    description: '創作叙事詩「てんげん」の世界観・設定・理（ことわり）の解説。',
+  },
 };
 
 export default async function AboutPage() {
